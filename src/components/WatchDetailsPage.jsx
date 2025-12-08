@@ -14,6 +14,9 @@ function WatchDetailsPage() {
   const [user, setUser] = useState(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [cartItemId, setCartItemId] = useState(null);
+  const [undoTimer, setUndoTimer] = useState(null);
 
   useEffect(() => {
     const fetchWatchDetails = async () => {
@@ -90,20 +93,54 @@ function WatchDetailsPage() {
 
   const handleAddToCart = async () => {
     try {
-      const { error } = await supabase.from('orders').insert([
+      const { data, error } = await supabase.from('orders').insert([
         {
           model: watch.model,
           brand: watch.brand,
           price: watch.price,
           image: watch.image,
         },
-      ]);
+      ]).select();
 
       if (error) throw error;
-      alert('Added to cart!');
+      
+      const itemId = data[0].id;
+      setCartItemId(itemId);
+      setNotification({ type: 'success', message: 'Added to cart!' });
+
+      // Auto-hide notification after 5 seconds
+      const timer = setTimeout(() => {
+        setNotification(null);
+        setCartItemId(null);
+      }, 5000);
+      setUndoTimer(timer);
     } catch (error) {
       console.error('Error adding item to cart:', error);
-      alert('Failed to add to cart');
+      setNotification({ type: 'error', message: 'Failed to add to cart' });
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
+  const handleUndoAddToCart = async () => {
+    if (!cartItemId) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', cartItemId);
+
+      if (error) throw error;
+      
+      setNotification({ type: 'info', message: 'Item removed from cart' });
+      setTimeout(() => setNotification(null), 3000);
+      
+      if (undoTimer) clearTimeout(undoTimer);
+      setCartItemId(null);
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+      setNotification({ type: 'error', message: 'Failed to undo' });
+      setTimeout(() => setNotification(null), 3000);
     }
   };
 
@@ -119,13 +156,14 @@ function WatchDetailsPage() {
     try {
       if (isInWishlist) {
         // Remove from wishlist
-        const result = await wishlistService.removeFromWishlistByWatchId(
+        const result = await wishlistService.removeFromWishlistByProductId(
           user.id,
           id
         );
         if (result.success) {
           setIsInWishlist(false);
-          alert('Removed from wishlist');
+          setNotification({ type: 'info', message: 'Removed from wishlist' });
+          setTimeout(() => setNotification(null), 3000);
         }
       } else {
         // Add to wishlist
@@ -136,14 +174,17 @@ function WatchDetailsPage() {
         });
         if (result.success) {
           setIsInWishlist(true);
-          alert('Added to wishlist!');
+          setNotification({ type: 'success', message: 'Added to wishlist!' });
+          setTimeout(() => setNotification(null), 3000);
         } else {
-          alert(result.message || 'Failed to add to wishlist');
+          setNotification({ type: 'error', message: result.message || 'Failed to add to wishlist' });
+          setTimeout(() => setNotification(null), 3000);
         }
       }
     } catch (error) {
       console.error('Wishlist toggle error:', error);
-      alert('An error occurred');
+      setNotification({ type: 'error', message: 'An error occurred' });
+      setTimeout(() => setNotification(null), 3000);
     } finally {
       setWishlistLoading(false);
     }
@@ -172,7 +213,33 @@ function WatchDetailsPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 2xl:px-12 py-8 md:py-12 2xl:py-16">
+    <>
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
+          <div
+            className={`px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px] ${
+              notification.type === 'success'
+                ? 'bg-green-500 text-white'
+                : notification.type === 'error'
+                ? 'bg-red-500 text-white'
+                : 'bg-blue-500 text-white'
+            }`}
+          >
+            <span className="flex-1">{notification.message}</span>
+            {cartItemId && notification.type === 'success' && (
+              <button
+                onClick={handleUndoAddToCart}
+                className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded text-sm font-medium transition-colors"
+              >
+                Undo
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 2xl:px-12 py-8 md:py-12 2xl:py-16">
       <button
         onClick={() => navigate(-1)}
         className="mb-6 md:mb-8 text-gray-600 hover:text-black flex items-center gap-2 text-sm md:text-base"
@@ -269,6 +336,7 @@ function WatchDetailsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
