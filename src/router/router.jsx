@@ -9,6 +9,7 @@ import WatchDetailsPage from '../components/WatchDetailsPage.jsx';
 import WishlistPage from '../components/WishlistPage.jsx';
 import OrdersPage from '../components/OrdersPage.jsx';
 import ProductsPage from '../components/ProductsPage.jsx';
+import AboutUsPage from '../components/AboutUsPage.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const routes = createBrowserRouter([
       {
         path: '/products',
         element: <ProductsPage />,
+      },
+      {
+        path: '/about',
+        element: <AboutUsPage />,
       },
       {
         path: '/watch/:id',

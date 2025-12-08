@@ -178,41 +178,6 @@ export default function Layout() {
                   Products
                   <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                 </Link>
-
-                <ul className="absolute left-0 top-full mt-0.5 w-40 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-opacity duration-300">
-                  <li>
-                    <Link
-                      to="/products/brands"
-                      className="block px-4 py-2 text-[#161818] hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                      Brands
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/products/watches"
-                      className="block px-4 py-2 text-[#161818] hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                      Watches
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/products/straps"
-                      className="block px-4 py-2 text-[#161818] hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                      Straps
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/products/accessories"
-                      className="block px-4 py-2 text-[#161818] hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                      Accessories
-                    </Link>
-                  </li>
-                </ul>
               </li>
 
               <li className="relative group">

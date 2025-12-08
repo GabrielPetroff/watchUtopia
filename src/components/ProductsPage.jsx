@@ -211,7 +211,8 @@ export default function ProductsPage() {
         <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           {/* Results count */}
           <p className="text-sm text-gray-600">
-            Showing {filteredAndSortedWatches.length} of {watches.length} watches
+            Showing {filteredAndSortedWatches.length} of {watches.length}{' '}
+            watches
           </p>
 
           {/* Sort Dropdown */}
