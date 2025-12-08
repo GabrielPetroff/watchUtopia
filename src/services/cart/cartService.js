@@ -1,0 +1,191 @@
+import { supabase } from '../api/supabaseClient.js';
+
+const cartService = {
+  /**
+   * Get all cart items for a user
+   */
+  async getCartItems(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Map through cart items and get public URLs for images
+      const cartItemsWithImageUrls = (data || []).map((item) => {
+        if (!item.image) {
+          return {
+            ...item,
+            imageUrl: '/placeholder-watch.jpg',
+          };
+        }
+
+        // Clean the image path - remove 'watches/' or 'img/' prefix if present
+        let cleanImagePath = item.image;
+        if (cleanImagePath.startsWith('watches/')) {
+          cleanImagePath = cleanImagePath.replace('watches/', '');
+        } else if (cleanImagePath.startsWith('img/')) {
+          cleanImagePath = cleanImagePath.replace('img/', '');
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
+
+        return {
+          ...item,
+          imageUrl: publicUrl,
+        };
+      });
+
+      return { success: true, data: cartItemsWithImageUrls };
+    } catch (error) {
+      console.error('Error fetching cart items:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Add item to cart
+   */
+  async addToCart(userId, watchData) {
+    try {
+      // Check if item already exists in cart
+      const { data: existingItem } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('watch_id', watchData.id)
+        .single();
+
+      if (existingItem) {
+        // Update quantity if item exists
+        const { data, error } = await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + 1 })
+          .eq('id', existingItem.id)
+          .select();
+
+        if (error) throw error;
+        return { success: true, data: data[0] };
+      } else {
+        // Add new item
+        const { data, error } = await supabase
+          .from('cart_items')
+          .insert([
+            {
+              user_id: userId,
+              watch_id: watchData.id,
+              model: watchData.model,
+              brand: watchData.brand,
+              price: watchData.price,
+              image: watchData.image,
+              quantity: 1,
+            },
+          ])
+          .select();
+
+        if (error) throw error;
+        return { success: true, data: data[0] };
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Update cart item quantity
+   */
+  async updateQuantity(cartItemId, quantity) {
+    try {
+      if (quantity <= 0) {
+        return await this.removeFromCart(cartItemId);
+      }
+
+      const { data, error } = await supabase
+        .from('cart_items')
+        .update({ quantity })
+        .eq('id', cartItemId)
+        .select();
+
+      if (error) throw error;
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Remove item from cart
+   */
+  async removeFromCart(cartItemId) {
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('id', cartItemId);
+
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Clear all cart items for a user
+   */
+  async clearCart(userId) {
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Get cart summary (total items and total price)
+   */
+  async getCartSummary(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('cart_items')
+        .select('quantity, price')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      const totalItems = data.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = data.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      return {
+        success: true,
+        data: {
+          totalItems,
+          totalPrice,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching cart summary:', error);
+      return { success: false, error: error.message };
+    }
+  },
+};
+
+export default cartService;

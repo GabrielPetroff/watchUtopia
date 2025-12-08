@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { supabase } from '../services/api/supabaseClient';
 import authService from '../services/auth/authServive.js';
 import wishlistService from '../services/wishlist/wishlistService.js';
+import cartService from '../services/cart/cartService.js';
 import { Heart } from 'lucide-react';
 
 function WatchDetailsPage() {
@@ -93,30 +94,39 @@ function WatchDetailsPage() {
 
   const handleAddToCart = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .insert([
-          {
-            model: watch.model,
-            brand: watch.brand,
-            price: watch.price,
-            image: watch.image,
-          },
-        ])
-        .select();
+      const user = await authService.getCurrentUser();
 
-      if (error) throw error;
+      if (!user) {
+        setNotification({
+          type: 'error',
+          message: 'Please login to add items to cart',
+        });
+        setTimeout(() => setNotification(null), 3000);
+        return;
+      }
 
-      const itemId = data[0].id;
-      setCartItemId(itemId);
-      setNotification({ type: 'success', message: 'Added to cart!' });
+      const result = await cartService.addToCart(user.id, {
+        id: watch.id,
+        model: watch.model,
+        brand: watch.brand,
+        price: watch.price,
+        image: watch.image,
+      });
 
-      // Auto-hide notification after 5 seconds
-      const timer = setTimeout(() => {
-        setNotification(null);
-        setCartItemId(null);
-      }, 5000);
-      setUndoTimer(timer);
+      if (result.success) {
+        const itemId = result.data.id;
+        setCartItemId(itemId);
+        setNotification({ type: 'success', message: 'Added to cart!' });
+
+        // Auto-hide notification after 5 seconds
+        const timer = setTimeout(() => {
+          setNotification(null);
+          setCartItemId(null);
+        }, 5000);
+        setUndoTimer(timer);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error('Error adding item to cart:', error);
       setNotification({ type: 'error', message: 'Failed to add to cart' });
@@ -128,18 +138,17 @@ function WatchDetailsPage() {
     if (!cartItemId) return;
 
     try {
-      const { error } = await supabase
-        .from('orders')
-        .delete()
-        .eq('id', cartItemId);
+      const result = await cartService.removeFromCart(cartItemId);
 
-      if (error) throw error;
+      if (result.success) {
+        setNotification({ type: 'info', message: 'Item removed from cart' });
+        setTimeout(() => setNotification(null), 3000);
 
-      setNotification({ type: 'info', message: 'Item removed from cart' });
-      setTimeout(() => setNotification(null), 3000);
-
-      if (undoTimer) clearTimeout(undoTimer);
-      setCartItemId(null);
+        if (undoTimer) clearTimeout(undoTimer);
+        setCartItemId(null);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error('Error removing item from cart:', error);
       setNotification({ type: 'error', message: 'Failed to undo' });

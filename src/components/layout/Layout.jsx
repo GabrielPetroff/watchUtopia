@@ -201,15 +201,35 @@ export default function Layout() {
               </li>
 
               {user && (
-                <li className="relative group">
-                  <Link
-                    to="/wishlist"
-                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
-                  >
-                    Wishlist
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
-                  </Link>
-                </li>
+                <>
+                  <li className="relative group">
+                    <Link
+                      to="/wishlist"
+                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                    >
+                      Wishlist
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                    </Link>
+                  </li>
+                  <li className="relative group">
+                    <Link
+                      to="/cart"
+                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                    >
+                      Cart
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                    </Link>
+                  </li>
+                  <li className="relative group">
+                    <Link
+                      to="/orders"
+                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                    >
+                      Orders
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                    </Link>
+                  </li>
+                </>
               )}
 
               {!user && (

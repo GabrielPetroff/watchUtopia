@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router';
 import { supabase } from '../services/api/supabaseClient';
+import authService from '../services/auth/authServive.js';
+import cartService from '../services/cart/cartService.js';
 
 function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);
@@ -90,20 +92,29 @@ function FeaturedWatches() {
   // Reusable add to cart function
   const handleAddToCart = useCallback(async (item) => {
     try {
-      const { error } = await supabase.from('orders').insert([
-        {
-          model: item.model,
-          brand: item.brand,
-          price: item.price,
-          image: item.image, // store the path, not the full URL
-        },
-      ]);
+      const user = await authService.getCurrentUser();
 
-      if (error) throw error;
-      // Optionally show success message
-      alert('Added to cart!');
+      if (!user) {
+        alert('Please login to add items to cart');
+        return;
+      }
+
+      const result = await cartService.addToCart(user.id, {
+        id: item.id,
+        model: item.model,
+        brand: item.brand,
+        price: item.price,
+        image: item.image, // store the path, not the full URL
+      });
+
+      if (result.success) {
+        alert('Added to cart!');
+      } else {
+        alert('Failed to add to cart');
+      }
     } catch (error) {
       console.error('Error adding item to cart:', error);
+      alert('Failed to add to cart');
     }
   }, []);
 

@@ -10,6 +10,7 @@ import WishlistPage from '../components/WishlistPage.jsx';
 import OrdersPage from '../components/OrdersPage.jsx';
 import ProductsPage from '../components/ProductsPage.jsx';
 import AboutUsPage from '../components/AboutUsPage.jsx';
+import CartPage from '../components/CartPage.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const routes = createBrowserRouter([
       {
         path: '/wishlist',
         element: <WishlistPage />,
+      },
+      {
+        path: '/cart',
+        element: <CartPage />,
       },
       {
         path: '/orders',
