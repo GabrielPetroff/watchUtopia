@@ -38,7 +38,13 @@ const authService = {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
       return {
         success: true,
         user: data.user,
@@ -46,7 +52,7 @@ const authService = {
       };
     } catch (error) {
       console.error('Login error: ', error);
-      throw error;
+      return handleSupabaseError(error);
     }
   },
 
@@ -55,11 +61,18 @@ const authService = {
   async logout() {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
       return { success: true };
     } catch (error) {
       console.error('Logout error:', error);
-      throw error;
+      return handleSupabaseError(error);
     }
   },
 
@@ -71,7 +84,14 @@ const authService = {
         data: { user },
         error,
       } = await supabase.auth.getUser();
-      if (error) throw error;
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          return null;
+        }
+      }
+
       return user;
     } catch (error) {
       console.error('Get current user error:', error);
@@ -93,7 +113,14 @@ const authService = {
         data: { session },
         error,
       } = await supabase.auth.getSession();
-      if (error) throw error;
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          return null;
+        }
+      }
+
       return session;
     } catch (error) {
       console.error('Get session error: ', error);
@@ -116,11 +143,17 @@ const authService = {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (error) throw error;
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
       return { success: true, data };
     } catch (error) {
       console.error('Password reset error:', error);
-      throw error;
+      return handleSupabaseError(error);
     }
   },
 
@@ -132,11 +165,17 @@ const authService = {
         password: newPassword,
       });
 
-      if (error) throw error;
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
       return { success: true, data };
     } catch (error) {
       console.error('Update password error: ', error);
-      throw error;
+      return handleSupabaseError(error);
     }
   },
 
@@ -145,11 +184,18 @@ const authService = {
   async refreshSession() {
     try {
       const { data, error } = await supabase.auth.refreshSession();
-      if (error) throw error;
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
       return { success: true, session: data.session };
     } catch (error) {
       console.error('Refresh session error: ', error);
-      throw error;
+      return handleSupabaseError(error);
     }
   },
 };

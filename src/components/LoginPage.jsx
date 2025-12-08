@@ -64,7 +64,6 @@ export default function LoginPage() {
     try {
       const result = await authService.login(formData.email, formData.password);
       const { data: session } = await supabase.auth.getSession();
-      console.log('Session after login:', session);
 
       navigate('/');
     } catch (error) {
