@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { fetchAllWatches } from '../services/productService';
 
@@ -6,8 +6,11 @@ export default function ProductsPage() {
   const [watches, setWatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
   const [selectedBrand, setSelectedBrand] = useState('all');
+  const sliderRef = useRef(null);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -29,17 +32,48 @@ export default function ProductsPage() {
   };
 
   // Get unique brands for filter
-  const brands = ['all', ...new Set(watches.map((watch) => watch.brand))];
+  const brands = [...new Set(watches.map((watch) => watch.brand))].sort();
 
-  // Filter watches based on search and brand selection
-  const filteredWatches = watches.filter((watch) => {
-    const matchesSearch =
-      watch.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      watch.brand?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand =
-      selectedBrand === 'all' || watch.brand === selectedBrand;
-    return matchesSearch && matchesBrand;
-  });
+  // Filter and sort watches
+  const filteredAndSortedWatches = watches
+    .filter((watch) => {
+      const matchesBrand =
+        selectedBrand === 'all' || watch.brand === selectedBrand;
+      return matchesBrand;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'newest':
+          return new Date(b.created_at) - new Date(a.created_at);
+        default:
+          return 0;
+      }
+    });
+
+  const scroll = (direction) => {
+    const slider = sliderRef.current;
+    if (slider) {
+      const scrollAmount = 300;
+      slider.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const updateButtonVisibility = () => {
+    const slider = sliderRef.current;
+    if (slider) {
+      setShowLeftButton(slider.scrollLeft > 0);
+      setShowRightButton(
+        slider.scrollLeft < slider.scrollWidth - slider.clientWidth - 10
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -81,44 +115,125 @@ export default function ProductsPage() {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search by brand or model..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
-              />
-            </div>
-
-            {/* Brand Filter */}
-            <div className="md:w-64">
-              <select
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+        {/* Brand Slider */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Filter by Brand
+          </h2>
+          <div className="relative group">
+            {/* Left Navigation Button */}
+            {showLeftButton && (
+              <button
+                onClick={() => scroll('left')}
+                className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                aria-label="Scroll left"
               >
-                {brands.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand === 'all' ? 'All Brands' : brand}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={3}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+            )}
 
+            {/* Slider Container */}
+            <div
+              ref={sliderRef}
+              onScroll={updateButtonVisibility}
+              className="overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide flex gap-3 py-4"
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              {/* All Brands Button */}
+              <button
+                onClick={() => setSelectedBrand('all')}
+                className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                  selectedBrand === 'all'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                }`}
+              >
+                All Brands
+              </button>
+
+              {/* Brand Buttons */}
+              {brands.map((brand) => (
+                <button
+                  key={brand}
+                  onClick={() => setSelectedBrand(brand)}
+                  className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                    selectedBrand === brand
+                      ? 'bg-indigo-600 text-white shadow-lg'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                  }`}
+                >
+                  {brand}
+                </button>
+              ))}
+            </div>
+
+            {/* Right Navigation Button */}
+            {showRightButton && (
+              <button
+                onClick={() => scroll('right')}
+                className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                aria-label="Scroll right"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={3}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sorting and Results */}
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           {/* Results count */}
           <p className="text-sm text-gray-600">
-            Showing {filteredWatches.length} of {watches.length} watches
+            Showing {filteredAndSortedWatches.length} of {watches.length} watches
           </p>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-3">
+            <label htmlFor="sort" className="text-sm font-medium text-gray-700">
+              Sort by:
+            </label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent bg-white"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
         </div>
 
         {/* Products Grid */}
-        {filteredWatches.length === 0 ? (
+        {filteredAndSortedWatches.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">
               No watches found matching your criteria
@@ -126,7 +241,7 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredWatches.map((watch) => (
+            {filteredAndSortedWatches.map((watch) => (
               <Link
                 key={watch.id}
                 to={`/watch/${watch.id}`}

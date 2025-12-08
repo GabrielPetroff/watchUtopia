@@ -93,17 +93,20 @@ function WatchDetailsPage() {
 
   const handleAddToCart = async () => {
     try {
-      const { data, error } = await supabase.from('orders').insert([
-        {
-          model: watch.model,
-          brand: watch.brand,
-          price: watch.price,
-          image: watch.image,
-        },
-      ]).select();
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([
+          {
+            model: watch.model,
+            brand: watch.brand,
+            price: watch.price,
+            image: watch.image,
+          },
+        ])
+        .select();
 
       if (error) throw error;
-      
+
       const itemId = data[0].id;
       setCartItemId(itemId);
       setNotification({ type: 'success', message: 'Added to cart!' });
@@ -131,10 +134,10 @@ function WatchDetailsPage() {
         .eq('id', cartItemId);
 
       if (error) throw error;
-      
+
       setNotification({ type: 'info', message: 'Item removed from cart' });
       setTimeout(() => setNotification(null), 3000);
-      
+
       if (undoTimer) clearTimeout(undoTimer);
       setCartItemId(null);
     } catch (error) {
@@ -177,7 +180,10 @@ function WatchDetailsPage() {
           setNotification({ type: 'success', message: 'Added to wishlist!' });
           setTimeout(() => setNotification(null), 3000);
         } else {
-          setNotification({ type: 'error', message: result.message || 'Failed to add to wishlist' });
+          setNotification({
+            type: 'error',
+            message: result.message || 'Failed to add to wishlist',
+          });
           setTimeout(() => setNotification(null), 3000);
         }
       }
@@ -240,102 +246,106 @@ function WatchDetailsPage() {
       )}
 
       <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 2xl:px-12 py-8 md:py-12 2xl:py-16">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 md:mb-8 text-gray-600 hover:text-black flex items-center gap-2 text-sm md:text-base"
-      >
-        <span>←</span> Back
-      </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 md:mb-8 text-gray-600 hover:text-black flex items-center gap-2 text-sm md:text-base"
+        >
+          <span>←</span> Back
+        </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 2xl:gap-16">
-        {/* Image Section */}
-        <div className="space-y-4">
-          <div className="bg-gray-50 rounded-lg 2xl:rounded-xl overflow-hidden">
-            <img
-              src={watch.imageUrl}
-              alt={`${watch.brand} ${watch.model}`}
-              className="w-full h-auto object-cover"
-              onError={() => {
-                console.error('Image failed to load:', watch.imageUrl);
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Details Section */}
-        <div className="space-y-6 md:space-y-8">
-          <div className="space-y-3 md:space-y-4">
-            <h1 className="text-3xl md:text-4xl 2xl:text-5xl font-bold">
-              {watch.model}
-            </h1>
-            <h2 className="text-xl md:text-2xl 2xl:text-3xl text-gray-600">
-              {watch.brand}
-            </h2>
-            <div className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-              ${watch.price}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 2xl:gap-16">
+          {/* Image Section */}
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg 2xl:rounded-xl overflow-hidden">
+              <img
+                src={watch.imageUrl}
+                alt={`${watch.brand} ${watch.model}`}
+                className="w-full h-auto object-cover"
+                onError={() => {
+                  console.error('Image failed to load:', watch.imageUrl);
+                }}
+              />
             </div>
           </div>
 
-          {/* Additional Details */}
-          <div className="border-t border-b border-gray-200 py-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm md:text-base">
-              <div>
-                <span className="text-gray-600 uppercase tracking-wider text-xs">
-                  Brand
-                </span>
-                <p className="font-medium mt-1">{watch.brand}</p>
-              </div>
-              <div>
-                <span className="text-gray-600 uppercase tracking-wider text-xs">
-                  Model
-                </span>
-                <p className="font-medium mt-1">{watch.model}</p>
+          {/* Details Section */}
+          <div className="space-y-6 md:space-y-8">
+            <div className="space-y-3 md:space-y-4">
+              <h1 className="text-3xl md:text-4xl 2xl:text-5xl font-bold">
+                {watch.model}
+              </h1>
+              <h2 className="text-xl md:text-2xl 2xl:text-3xl text-gray-600">
+                {watch.brand}
+              </h2>
+              <div className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
+                ${watch.price}
               </div>
             </div>
-          </div>
 
-          {/* Description if available */}
-          {watch.description && (
-            <div className="space-y-2">
-              <h3 className="text-lg md:text-xl font-semibold">Description</h3>
-              <p className="text-gray-700 leading-relaxed">
-                {watch.description}
-              </p>
+            {/* Additional Details */}
+            <div className="border-t border-b border-gray-200 py-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4 text-sm md:text-base">
+                <div>
+                  <span className="text-gray-600 uppercase tracking-wider text-xs">
+                    Brand
+                  </span>
+                  <p className="font-medium mt-1">{watch.brand}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600 uppercase tracking-wider text-xs">
+                    Model
+                  </span>
+                  <p className="font-medium mt-1">{watch.model}</p>
+                </div>
+              </div>
             </div>
-          )}
 
-          {/* Action Buttons */}
-          <div className="space-y-4 pt-4">
-            <button
-              onClick={handleAddToCart}
-              className="w-full px-6 py-4 md:py-5 bg-[#161818] text-white uppercase text-sm md:text-base font-medium hover:bg-[#2a2c2c] transition-colors duration-200"
-            >
-              Add to Cart
-            </button>
-            <button
-              onClick={handleWishlistToggle}
-              disabled={wishlistLoading}
-              className={`w-full px-6 py-4 md:py-5 border-2 uppercase text-sm md:text-base font-medium transition-colors duration-200 flex items-center justify-center gap-2 ${
-                isInWishlist
-                  ? 'border-red-500 text-red-600 hover:bg-red-50'
-                  : 'border-[#161818] hover:bg-gray-50'
-              } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {wishlistLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-              ) : (
-                <>
-                  <Heart
-                    className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`}
-                  />
-                  {isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                </>
-              )}
-            </button>
+            {/* Description if available */}
+            {watch.description && (
+              <div className="space-y-2">
+                <h3 className="text-lg md:text-xl font-semibold">
+                  Description
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {watch.description}
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="space-y-4 pt-4">
+              <button
+                onClick={handleAddToCart}
+                className="w-full px-6 py-4 md:py-5 bg-[#161818] text-white uppercase text-sm md:text-base font-medium hover:bg-[#2a2c2c] transition-colors duration-200"
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={handleWishlistToggle}
+                disabled={wishlistLoading}
+                className={`w-full px-6 py-4 md:py-5 border-2 uppercase text-sm md:text-base font-medium transition-colors duration-200 flex items-center justify-center gap-2 ${
+                  isInWishlist
+                    ? 'border-red-500 text-red-600 hover:bg-red-50'
+                    : 'border-[#161818] hover:bg-gray-50'
+                } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {wishlistLoading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
+                ) : (
+                  <>
+                    <Heart
+                      className={`w-5 h-5 ${
+                        isInWishlist ? 'fill-current' : ''
+                      }`}
+                    />
+                    {isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
