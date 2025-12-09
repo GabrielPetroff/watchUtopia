@@ -11,6 +11,7 @@ import OrdersPage from '../components/OrdersPage.jsx';
 import ProductsPage from '../components/ProductsPage.jsx';
 import AboutUsPage from '../components/AboutUsPage.jsx';
 import CartPage from '../components/CartPage.jsx';
+import CheckoutPage from '../components/CheckoutPage.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -51,15 +52,18 @@ const routes = createBrowserRouter([
         element: <CartPage />,
       },
       {
+        path: '/checkout',
+        element: <CheckoutPage />,
+      },
+      {
         path: '/orders',
         element: <OrdersPage />,
       },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
+      },
     ],
-  },
-
-  {
-    path: 'profiles',
-    element: <ProfilePage />,
   },
 ]);
 

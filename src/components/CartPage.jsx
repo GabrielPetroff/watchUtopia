@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import authService from '../services/auth/authServive.js';
 import cartService from '../services/cart/cartService.js';
-import orderService from '../services/order/orderService.js';
 import { ShoppingCart, Plus, Minus, Trash2, ArrowRight } from 'lucide-react';
 
 export default function CartPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-  const [checkingOut, setCheckingOut] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,36 +43,10 @@ export default function CartPage() {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user || cartItems.length === 0) return;
-
-    setCheckingOut(true);
-    try {
-      // Create orders from cart items
-      for (const item of cartItems) {
-        await orderService.createOrder({
-          user_id: user.id,
-          model: item.model,
-          brand: item.brand,
-          price: item.price,
-          image: item.image,
-          quantity: item.quantity,
-          total_price: item.price * item.quantity,
-          status: 'pending',
-        });
-      }
-
-      // Clear cart after successful checkout
-      await cartService.clearCart(user.id);
-
-      // Navigate to orders page
-      navigate('/orders');
-    } catch (error) {
-      console.error('Error during checkout:', error);
-      alert('Failed to complete checkout. Please try again.');
-    } finally {
-      setCheckingOut(false);
-    }
+    // Navigate to checkout page
+    navigate('/checkout');
   };
 
   const formatCurrency = (amount) => {
@@ -255,20 +227,10 @@ export default function CartPage() {
 
             <button
               onClick={handleCheckout}
-              disabled={checkingOut}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
             >
-              {checkingOut ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  Proceed to Checkout
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
+              Proceed to Checkout
+              <ArrowRight className="w-5 h-5" />
             </button>
 
             <Link

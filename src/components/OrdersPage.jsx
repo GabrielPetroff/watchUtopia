@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import authService from '../services/auth/authServive.js';
 import orderService from '../services/order/orderService.js';
 import { Package, Clock, Truck, CheckCircle, XCircle, Eye } from 'lucide-react';
@@ -10,6 +10,19 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [stats, setStats] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if we came from successful checkout
+    if (location.state?.orderSuccess) {
+      setShowSuccess(true);
+      // Clear the state to prevent showing message on refresh
+      window.history.replaceState({}, document.title);
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000);
+    }
+  }, [location]);
 
   useEffect(() => {
     async function loadOrders() {
@@ -111,6 +124,21 @@ export default function OrdersPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">My Orders</h1>
 
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+          <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-green-900">
+              Order placed successfully!
+            </p>
+            <p className="text-sm text-green-700">
+              Your order has been received and is being processed.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Order Statistics */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -210,42 +238,42 @@ export default function OrdersPage() {
                       {formatCurrency(order.total_amount)}
                     </p>
                     <p className="text-sm text-gray-600">
-                      {order.order_items?.length || 0} item(s)
+                      {order.items?.length || 0} item(s)
                     </p>
                   </div>
                 </div>
 
                 {/* Order Items Preview */}
-                {order.order_items && order.order_items.length > 0 && (
+                {order.items && order.items.length > 0 && (
                   <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {order.order_items.slice(0, 3).map((item) => (
-                        <div key={item.id} className="flex items-center gap-3">
-                          {item.product_image_url && (
+                      {order.items.slice(0, 3).map((item, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          {item.imageUrl && (
                             <img
-                              src={item.product_image_url}
-                              alt={item.product_name}
+                              src={item.imageUrl}
+                              alt={item.name}
                               className="w-16 h-16 object-cover rounded"
                             />
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              {item.product_name}
+                              {item.name}
                             </p>
                             <p className="text-xs text-gray-600">
-                              {item.product_brand} {item.product_model}
+                              {item.brand} {item.model}
                             </p>
                             <p className="text-sm text-gray-700">
                               Qty: {item.quantity} ×{' '}
-                              {formatCurrency(item.price_at_purchase)}
+                              {formatCurrency(item.price)}
                             </p>
                           </div>
                         </div>
                       ))}
                     </div>
-                    {order.order_items.length > 3 && (
+                    {order.items.length > 3 && (
                       <p className="text-sm text-gray-600 mt-3">
-                        +{order.order_items.length - 3} more item(s)
+                        +{order.items.length - 3} more item(s)
                       </p>
                     )}
                   </div>
@@ -276,32 +304,29 @@ export default function OrdersPage() {
                       ? 'Hide Details'
                       : 'View Details'}
                   </button>
-                  {['pending', 'processing'].includes(order.status) && (
-                    <button
-                      onClick={async () => {
-                        if (
-                          confirm('Are you sure you want to cancel this order?')
-                        ) {
-                          const result = await orderService.cancelOrder(
-                            order.id
+                  <button
+                    onClick={async () => {
+                      if (
+                        confirm(
+                          'Are you sure you want to delete this order? This action cannot be undone.'
+                        )
+                      ) {
+                        const result = await orderService.deleteOrder(order.id);
+                        if (result.success) {
+                          setOrders(orders.filter((o) => o.id !== order.id));
+                        } else {
+                          alert(
+                            'Failed to delete order: ' +
+                              (result.message || 'Unknown error')
                           );
-                          if (result.success) {
-                            setOrders(
-                              orders.map((o) =>
-                                o.id === order.id
-                                  ? { ...o, status: 'cancelled' }
-                                  : o
-                              )
-                            );
-                          }
                         }
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      Cancel Order
-                    </button>
-                  )}
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Delete Order
+                  </button>
                 </div>
 
                 {/* Detailed View */}

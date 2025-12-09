@@ -10,6 +10,8 @@ import {
   Linkedin,
   Mail,
   ChevronRight,
+  User,
+  UserCheck,
 } from 'lucide-react';
 
 export default function Layout() {
@@ -244,21 +246,31 @@ export default function Layout() {
                 </li>
               )}
 
+              <li className="relative group">
+                <Link
+                  to="/profile"
+                  className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300 flex items-center gap-2"
+                  title={user ? 'My Profile' : 'Profile'}
+                >
+                  {user ? (
+                    <UserCheck className="w-5 h-5" />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              </li>
+
               {user ? (
-                <>
-                  <li className="text-[#161818] font-medium">
-                    Welcome, {user.email}
-                  </li>
-                  <li className="relative group">
-                    <button
-                      onClick={handleLogout}
-                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
-                    >
-                      Logout
-                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
-                    </button>
-                  </li>
-                </>
+                <li className="relative group">
+                  <button
+                    onClick={handleLogout}
+                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                  >
+                    Logout
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                  </button>
+                </li>
               ) : (
                 <li className="relative group">
                   <Link

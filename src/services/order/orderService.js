@@ -11,22 +11,7 @@ const orderService = {
     try {
       const { data, error } = await supabase
         .from('orders')
-        .select(
-          `
-          *,
-          order_items (
-            id,
-            product_id,
-            product_name,
-            product_brand,
-            product_model,
-            product_image_url,
-            price_at_purchase,
-            quantity,
-            subtotal
-          )
-        `
-        )
+        .select('*')
         .eq('user_id', userId)
         .order('order_date', { ascending: false });
 
@@ -53,22 +38,7 @@ const orderService = {
     try {
       const { data, error } = await supabase
         .from('orders')
-        .select(
-          `
-          *,
-          order_items (
-            id,
-            product_id,
-            product_name,
-            product_brand,
-            product_model,
-            product_image_url,
-            price_at_purchase,
-            quantity,
-            subtotal
-          )
-        `
-        )
+        .select('*')
         .eq('id', orderId)
         .single();
 
@@ -98,8 +68,7 @@ const orderService = {
    */
   async createOrder(orderData) {
     try {
-      const { userId, items, shippingInfo, paymentMethod, customerNotes } =
-        orderData;
+      const { userId, items } = orderData;
 
       // Calculate total amount
       const totalAmount = items.reduce(
@@ -107,28 +76,26 @@ const orderService = {
         0
       );
 
-      // Generate order number (you can also use the database function)
-      const orderNumber = `ORD-${Date.now()}-${Math.floor(
-        Math.random() * 1000
-      )}`;
+      // Prepare items for JSON storage
+      const itemsJson = items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        brand: item.brand,
+        model: item.model,
+        imageUrl: item.imageUrl,
+        price: item.price,
+        quantity: item.quantity,
+      }));
 
-      // Insert the order
+      // Insert the order with items as JSON
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert([
           {
             user_id: userId,
-            order_number: orderNumber,
             total_amount: totalAmount,
             status: 'pending',
-            payment_method: paymentMethod,
-            payment_status: 'pending',
-            shipping_address: shippingInfo.address,
-            shipping_city: shippingInfo.city,
-            shipping_postal_code: shippingInfo.postalCode,
-            shipping_country: shippingInfo.country,
-            shipping_phone: shippingInfo.phone,
-            customer_notes: customerNotes || null,
+            items: itemsJson,
           },
         ])
         .select()
@@ -141,39 +108,9 @@ const orderService = {
         }
       }
 
-      // Insert order items
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.productId,
-        product_name: item.name,
-        product_brand: item.brand,
-        product_model: item.model,
-        product_image_url: item.imageUrl,
-        price_at_purchase: item.price,
-        quantity: item.quantity,
-        subtotal: item.price * item.quantity,
-      }));
-
-      const { data: insertedItems, error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems)
-        .select();
-
-      if (itemsError) {
-        // Rollback: delete the order if items insertion fails
-        await supabase.from('orders').delete().eq('id', order.id);
-        const handledError = handleSupabaseError(itemsError);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
       return {
         success: true,
-        data: {
-          ...order,
-          order_items: insertedItems,
-        },
+        data: order,
         message: 'Order created successfully',
       };
     } catch (error) {
@@ -289,8 +226,7 @@ const orderService = {
         .from('orders')
         .update({ status: 'cancelled' })
         .eq('id', orderId)
-        .select()
-        .single();
+        .select();
 
       if (error) {
         const handledError = handleSupabaseError(error);
@@ -299,9 +235,39 @@ const orderService = {
         }
       }
 
-      return { success: true, data, message: 'Order cancelled successfully' };
+      return {
+        success: true,
+        data: data?.[0] || data,
+        message: 'Order cancelled successfully',
+      };
     } catch (error) {
       console.error('Cancel order error:', error);
+      return handleSupabaseError(error);
+    }
+  },
+
+  /**
+   * Delete an order
+   * @param {string} orderId - The order's UUID
+   * @returns {Promise<{success: boolean, message?: string}>}
+   */
+  async deleteOrder(orderId) {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
+      return { success: true, message: 'Order deleted successfully' };
+    } catch (error) {
+      console.error('Delete order error:', error);
       return handleSupabaseError(error);
     }
   },
