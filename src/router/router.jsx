@@ -12,6 +12,7 @@ import ProductsPage from '../components/ProductsPage.jsx';
 import AboutUsPage from '../components/AboutUsPage.jsx';
 import CartPage from '../components/CartPage.jsx';
 import CheckoutPage from '../components/CheckoutPage.jsx';
+import ProductEditPage from '../components/ProductEditPage.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -62,6 +63,10 @@ const routes = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+      },
+      {
+        path: '/product/:id/edit',
+        element: <ProductEditPage />,
       },
     ],
   },

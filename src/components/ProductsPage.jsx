@@ -8,9 +8,13 @@ export default function ProductsPage() {
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('newest');
   const [selectedBrand, setSelectedBrand] = useState('all');
+  const [selectedTag, setSelectedTag] = useState('all');
   const sliderRef = useRef(null);
+  const tagSliderRef = useRef(null);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
+  const [showTagLeftButton, setShowTagLeftButton] = useState(false);
+  const [showTagRightButton, setShowTagRightButton] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,12 +38,30 @@ export default function ProductsPage() {
   // Get unique brands for filter
   const brands = [...new Set(watches.map((watch) => watch.brand))].sort();
 
+  // Get unique tags for selected brand
+  const tags =
+    selectedBrand === 'all'
+      ? []
+      : [
+          ...new Set(
+            watches
+              .filter((watch) => watch.brand === selectedBrand && watch.tag)
+              .map((watch) => watch.tag)
+          ),
+        ].sort();
+
+  // Reset tag selection when brand changes
+  useEffect(() => {
+    setSelectedTag('all');
+  }, [selectedBrand]);
+
   // Filter and sort watches
   const filteredAndSortedWatches = watches
     .filter((watch) => {
       const matchesBrand =
         selectedBrand === 'all' || watch.brand === selectedBrand;
-      return matchesBrand;
+      const matchesTag = selectedTag === 'all' || watch.tag === selectedTag;
+      return matchesBrand && matchesTag;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -65,11 +87,32 @@ export default function ProductsPage() {
     }
   };
 
+  const scrollTag = (direction) => {
+    const slider = tagSliderRef.current;
+    if (slider) {
+      const scrollAmount = 300;
+      slider.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const updateButtonVisibility = () => {
     const slider = sliderRef.current;
     if (slider) {
       setShowLeftButton(slider.scrollLeft > 0);
       setShowRightButton(
+        slider.scrollLeft < slider.scrollWidth - slider.clientWidth - 10
+      );
+    }
+  };
+
+  const updateTagButtonVisibility = () => {
+    const slider = tagSliderRef.current;
+    if (slider) {
+      setShowTagLeftButton(slider.scrollLeft > 0);
+      setShowTagRightButton(
         slider.scrollLeft < slider.scrollWidth - slider.clientWidth - 10
       );
     }
@@ -206,6 +249,100 @@ export default function ProductsPage() {
             )}
           </div>
         </div>
+
+        {/* Tag Slider - Only show when a brand is selected */}
+        {selectedBrand !== 'all' && tags.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Filter by Collection
+            </h2>
+            <div className="relative group">
+              {/* Left Navigation Button */}
+              {showTagLeftButton && (
+                <button
+                  onClick={() => scrollTag('left')}
+                  className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                  aria-label="Scroll left"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+              )}
+
+              {/* Slider Container */}
+              <div
+                ref={tagSliderRef}
+                onScroll={updateTagButtonVisibility}
+                className="overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide flex gap-3 py-4"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                }}
+              >
+                {/* All Tags Button */}
+                <button
+                  onClick={() => setSelectedTag('all')}
+                  className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                    selectedTag === 'all'
+                      ? 'bg-indigo-600 text-white shadow-lg'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                  }`}
+                >
+                  All Collections
+                </button>
+
+                {/* Tag Buttons */}
+                {tags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                      selectedTag === tag
+                        ? 'bg-indigo-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right Navigation Button */}
+              {showTagRightButton && (
+                <button
+                  onClick={() => scrollTag('right')}
+                  className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                  aria-label="Scroll right"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Sorting and Results */}
         <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

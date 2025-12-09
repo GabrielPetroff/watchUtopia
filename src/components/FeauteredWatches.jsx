@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { supabase } from '../services/api/supabaseClient';
 import authService from '../services/auth/authServive.js';
 import cartService from '../services/cart/cartService.js';
+import { getImageUrl } from '../services/imageService';
 
 function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);
@@ -20,25 +21,11 @@ function FeaturedWatches() {
 
       if (error) throw error;
 
-      // Map through watches and get public URLs for images
-      const watchesWithImageUrls = (data || []).map((watch) => {
-        // Clean the image path - remove 'watches/' or 'img/' prefix if present
-        let cleanImagePath = watch.image;
-        if (cleanImagePath.startsWith('watches/')) {
-          cleanImagePath = cleanImagePath.replace('watches/', '');
-        } else if (cleanImagePath.startsWith('img/')) {
-          cleanImagePath = cleanImagePath.replace('img/', '');
-        }
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
-        return {
-          ...watch,
-          imageUrl: publicUrl,
-        };
-      });
+      // Map through watches and get proper image URLs
+      const watchesWithImageUrls = (data || []).map((watch) => ({
+        ...watch,
+        imageUrl: getImageUrl(watch.image),
+      }));
 
       setBestSellers(watchesWithImageUrls);
     } catch (error) {
@@ -57,25 +44,11 @@ function FeaturedWatches() {
 
       if (error) throw error;
 
-      // Map through watches and get public URLs for images
-      const watchesWithImageUrls = (data || []).map((watch) => {
-        // Clean the image path - remove 'watches/' or 'img/' prefix if present
-        let cleanImagePath = watch.image;
-        if (cleanImagePath.startsWith('watches/')) {
-          cleanImagePath = cleanImagePath.replace('watches/', '');
-        } else if (cleanImagePath.startsWith('img/')) {
-          cleanImagePath = cleanImagePath.replace('img/', '');
-        }
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
-        return {
-          ...watch,
-          imageUrl: publicUrl,
-        };
-      });
+      // Map through watches and get proper image URLs
+      const watchesWithImageUrls = (data || []).map((watch) => ({
+        ...watch,
+        imageUrl: getImageUrl(watch.image),
+      }));
 
       setLatestReleases(watchesWithImageUrls);
     } catch (error) {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { supabase } from '../services/api/supabaseClient';
 import orderService from '../services/order/orderService';
 import {
@@ -12,6 +13,8 @@ import {
 } from 'lucide-react';
 
 export default function SuperAdminProfilePage({ user }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -30,14 +33,36 @@ export default function SuperAdminProfilePage({ user }) {
     tag: '',
     description: '',
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
+    // Check for notification from navigation state
+    if (location.state?.notification) {
+      const { type, message } = location.state.notification;
+      if (type === 'success') {
+        setSuccess(message);
+      } else if (type === 'error') {
+        setError(message);
+      }
+
+      // Clear notification after 5 seconds
+      setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 5000);
+
+      // Clear the state so notification doesn't show again on refresh
+      window.history.replaceState({}, document.title);
+    }
+
     if (activeTab === 'products') {
       fetchProducts();
     } else if (activeTab === 'orders') {
       fetchAllOrders();
     }
-  }, [activeTab, user]);
+  }, [activeTab, user, location]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -80,6 +105,83 @@ export default function SuperAdminProfilePage({ user }) {
     setProductForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file');
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Image size should be less than 10MB');
+        return;
+      }
+
+      setImageFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file) => {
+    try {
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(7)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('watch-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (error) {
+        throw new Error(
+          `Upload failed: ${error.message || JSON.stringify(error)}`
+        );
+      }
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('watch-images').getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (err) {
+      throw new Error('Failed to upload image: ' + err.message);
+    }
+  };
+
+  const deleteImage = async (imageUrl) => {
+    try {
+      // Extract file path from URL
+      const urlParts = imageUrl.split('/');
+      const bucketIndex = urlParts.findIndex((part) => part === 'watch-images');
+      if (bucketIndex === -1) return; // Not a Supabase storage URL
+
+      const filePath = urlParts.slice(bucketIndex + 1).join('/');
+
+      // Delete from storage
+      await supabase.storage.from('watch-images').remove([filePath]);
+    } catch (err) {
+      console.error('Failed to delete old image:', err);
+      // Don't throw - this is not critical
+    }
+  };
+
   const resetProductForm = () => {
     setProductForm({
       brand: '',
@@ -89,6 +191,8 @@ export default function SuperAdminProfilePage({ user }) {
       tag: '',
       description: '',
     });
+    setImageFile(null);
+    setImagePreview('');
     setIsAddingProduct(false);
     setEditingProduct(null);
   };
@@ -96,20 +200,33 @@ export default function SuperAdminProfilePage({ user }) {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setUploading(true);
     setError('');
     setSuccess('');
 
     try {
+      let imageUrl = productForm.image;
+
+      // If user selected a new image file, upload it
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
+      // Validate we have an image URL (required for new products)
+      if (!imageUrl) {
+        throw new Error('Please provide an image (file upload or URL)');
+      }
+
       const { error } = await supabase
         .from('brands')
         .insert([
           {
-            brand: productForm.brand,
-            model: productForm.model,
+            brand: productForm.brand.trim(),
+            model: productForm.model.trim(),
             price: parseFloat(productForm.price),
-            image: productForm.image,
-            tag: productForm.tag,
-            description: productForm.description,
+            image: imageUrl,
+            tag: productForm.tag?.trim() || null,
+            description: productForm.description?.trim() || null,
           },
         ])
         .select();
@@ -123,38 +240,68 @@ export default function SuperAdminProfilePage({ user }) {
       setError('Failed to add product: ' + err.message);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
   const handleEditProduct = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setUploading(true);
     setError('');
     setSuccess('');
 
     try {
-      const { error } = await supabase
+      let imageUrl = productForm.image;
+
+      // If user selected a new image file, upload it and delete old one
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+
+        // Delete old image if it was from storage
+        if (
+          editingProduct.image &&
+          editingProduct.image.includes('watch-images')
+        ) {
+          await deleteImage(editingProduct.image);
+        }
+      }
+
+      // If no new image and no existing image URL, keep the original
+      if (!imageUrl && editingProduct.image) {
+        imageUrl = editingProduct.image;
+      }
+
+      const updateData = {
+        brand: productForm.brand.trim(),
+        model: productForm.model.trim(),
+        price: parseFloat(productForm.price),
+        image: imageUrl,
+        tag: productForm.tag?.trim() || null,
+        description: productForm.description?.trim() || null,
+      };
+
+      const { data, error } = await supabase
         .from('brands')
-        .update({
-          brand: productForm.brand,
-          model: productForm.model,
-          price: parseFloat(productForm.price),
-          image: productForm.image,
-          tag: productForm.tag,
-          description: productForm.description,
-        })
+        .update(updateData)
         .eq('id', editingProduct.id)
         .select();
 
       if (error) throw error;
 
+      if (!data || data.length === 0) {
+        throw new Error('Failed to update product - no rows affected');
+      }
+
       setSuccess('Product updated successfully!');
       resetProductForm();
-      fetchProducts();
+      await fetchProducts();
     } catch (err) {
+      console.error('Update error:', err);
       setError('Failed to update product: ' + err.message);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -167,12 +314,21 @@ export default function SuperAdminProfilePage({ user }) {
     setSuccess('');
 
     try {
+      // Get the product to find its image URL
+      const product = products.find((p) => p.id === productId);
+
+      // Delete from database
       const { error } = await supabase
         .from('brands')
         .delete()
         .eq('id', productId);
 
       if (error) throw error;
+
+      // Delete image from storage if it exists
+      if (product?.image && product.image.includes('watch-images')) {
+        await deleteImage(product.image);
+      }
 
       setSuccess('Product deleted successfully!');
       fetchProducts();
@@ -181,19 +337,6 @@ export default function SuperAdminProfilePage({ user }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const startEditingProduct = (product) => {
-    setEditingProduct(product);
-    setProductForm({
-      brand: product.brand,
-      model: product.model,
-      price: product.price.toString(),
-      image: product.image,
-      tag: product.tag || '',
-      description: product.description || '',
-    });
-    setIsAddingProduct(false);
   };
 
   const handleOrderStatusToggle = async (order) => {
@@ -356,20 +499,6 @@ export default function SuperAdminProfilePage({ user }) {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL *
-                    </label>
-                    <input
-                      type="url"
-                      name="image"
-                      value={productForm.image}
-                      onChange={handleProductFormChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tag
                     </label>
                     <input
@@ -393,16 +522,82 @@ export default function SuperAdminProfilePage({ user }) {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
+
+                  {/* Image Upload Section */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Product Image *
+                    </label>
+
+                    {/* Image Preview */}
+                    {imagePreview && (
+                      <div className="mb-3">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="h-40 w-auto object-cover rounded-lg border border-gray-300"
+                        />
+                      </div>
+                    )}
+
+                    {/* File Upload Option */}
+                    <div className="mb-3">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Plus className="w-8 h-8 mb-2 text-gray-500" />
+                          <p className="mb-2 text-sm text-gray-500">
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>{' '}
+                            or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            PNG, JPG, WEBP (MAX. 10MB)
+                          </p>
+                        </div>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Or use URL */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-gray-50 text-gray-500">
+                          Or use image URL
+                        </span>
+                      </div>
+                    </div>
+
+                    <input
+                      type="text"
+                      name="image"
+                      value={productForm.image}
+                      onChange={handleProductFormChange}
+                      placeholder="https://example.com/image.jpg or path/to/image.png"
+                      required={!editingProduct && !imageFile}
+                      className="mt-3 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || uploading}
                     className="flex items-center px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
                   >
                     <Save className="w-5 h-5 mr-2" />
-                    {loading
+                    {uploading
+                      ? 'Uploading image...'
+                      : loading
                       ? 'Saving...'
                       : editingProduct
                       ? 'Update Product'
@@ -465,14 +660,18 @@ export default function SuperAdminProfilePage({ user }) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
-                            onClick={() => startEditingProduct(product)}
+                            onClick={() =>
+                              navigate(`/product/${product.id}/edit`)
+                            }
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
+                            title="Edit product"
                           >
                             <Edit2 className="w-5 h-5 inline" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product.id)}
                             className="text-red-600 hover:text-red-900"
+                            title="Delete product"
                           >
                             <Trash2 className="w-5 h-5 inline" />
                           </button>

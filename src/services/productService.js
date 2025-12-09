@@ -1,4 +1,5 @@
 import { supabase } from './api/supabaseClient';
+import { getImageUrl } from './imageService';
 
 /**
  * Fetch all watches from the brands table
@@ -13,33 +14,11 @@ export const fetchAllWatches = async () => {
 
     if (error) throw error;
 
-    // Map through watches and get public URLs for images
-    const watchesWithImageUrls = (data || []).map((watch) => {
-      // Handle missing or null image paths
-      if (!watch.image) {
-        return {
-          ...watch,
-          imageUrl: '/placeholder-watch.jpg', // fallback image
-        };
-      }
-
-      // Clean the image path - remove 'watches/' or 'img/' prefix if present
-      let cleanImagePath = watch.image;
-      if (cleanImagePath.startsWith('watches/')) {
-        cleanImagePath = cleanImagePath.replace('watches/', '');
-      } else if (cleanImagePath.startsWith('img/')) {
-        cleanImagePath = cleanImagePath.replace('img/', '');
-      }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
-      return {
-        ...watch,
-        imageUrl: publicUrl,
-      };
-    });
+    // Map through watches and get proper image URLs
+    const watchesWithImageUrls = (data || []).map((watch) => ({
+      ...watch,
+      imageUrl: getImageUrl(watch.image),
+    }));
 
     return {
       success: true,
@@ -69,34 +48,11 @@ export const fetchWatchById = async (id) => {
 
     if (error) throw error;
 
-    // Handle missing or null image paths
-    if (!data.image) {
-      return {
-        success: true,
-        data: {
-          ...data,
-          imageUrl: '/placeholder-watch.jpg',
-        },
-      };
-    }
-
-    // Clean the image path
-    let cleanImagePath = data.image;
-    if (cleanImagePath.startsWith('watches/')) {
-      cleanImagePath = cleanImagePath.replace('watches/', '');
-    } else if (cleanImagePath.startsWith('img/')) {
-      cleanImagePath = cleanImagePath.replace('img/', '');
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
     return {
       success: true,
       data: {
         ...data,
-        imageUrl: publicUrl,
+        imageUrl: getImageUrl(data.image),
       },
     };
   } catch (error) {
