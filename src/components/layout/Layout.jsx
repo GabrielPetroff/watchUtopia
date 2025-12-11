@@ -3,12 +3,6 @@ import { Link, Outlet } from 'react-router';
 import authService from '../../services/auth/authServive.js';
 import {
   ChevronDown,
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  Linkedin,
-  Mail,
   ChevronRight,
   User,
   UserCheck,
@@ -66,52 +60,6 @@ export default function Layout() {
     { brand: 'Audemars Piguet', linkTo: '/AudemarsPiguetPage' },
     { brand: 'Patek Philippe', linkTo: '/PatekPhilippePage' },
   ];
-
-  const shopItems = ['Watches', 'New Releases', 'Straps', 'Accessories'];
-  const aboutItems = [
-    'Shipping',
-    'Financing',
-    'Returns & Refunds',
-    'Warranty',
-    'Account Login',
-  ];
-  const customerCareItems = ['Option A', 'Option B', 'Option C'];
-
-  const AccordionSection = ({ title, items, section }) => (
-    <li className="w-full">
-      <div className="flex flex-col">
-        <button
-          onClick={() => toggleSection(section)}
-          className="flex items-center justify-between w-full py-2 border-b border-gray-700 hover:text-gray-300 transition-colors"
-        >
-          <h3 className="uppercase text-left font-semibold">{title}</h3>
-          <ChevronDown
-            className={`w-6 h-6 transition-transform duration-300 ${
-              activeSection === section ? 'rotate-180' : ''
-            }`}
-          />
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-300 ${
-            activeSection === section
-              ? 'max-h-96 opacity-100'
-              : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="flex flex-col items-start py-3 space-y-2">
-            {items.map((item, index) => (
-              <p
-                key={index}
-                className="hover:text-gray-300 transition-colors cursor-pointer text-sm"
-              >
-                {item}
-              </p>
-            ))}
-          </div>
-        </div>
-      </div>
-    </li>
-  );
 
   const BrandsSection = () => (
     <li className="w-full">
@@ -324,216 +272,324 @@ export default function Layout() {
       </footer> */}
 
       <footer className="w-full bg-[#161818] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Mobile/Tablet View - Accordion Style */}
           <div className="lg:hidden">
             <ul className="flex flex-col space-y-1">
-              <AccordionSection title="Shop" items={shopItems} section="shop" />
-              <AccordionSection
-                title="About Us"
-                items={aboutItems}
-                section="about"
-              />
-              <AccordionSection
-                title="Customer Care"
-                items={customerCareItems}
-                section="care"
-              />
               <BrandsSection />
 
-              {/* Newsletter */}
-              <li className="w-full pt-6">
-                <div className="flex flex-col space-y-3">
-                  <h3 className="uppercase font-semibold">Subscribe</h3>
-                  <p className="text-sm text-gray-300">
-                    Sign up to our monthly newsletter
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      className="flex-1 bg-transparent border border-gray-600 py-3 px-4 focus:outline-none focus:border-white transition-colors text-sm"
-                      type="email"
-                      placeholder="Email address"
+              {/* Quick Links */}
+              <li className="w-full">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => toggleSection('quick-links')}
+                    className="flex items-center justify-between w-full py-2 border-b border-gray-700 hover:text-gray-300 transition-colors"
+                  >
+                    <h3 className="uppercase text-left font-semibold">
+                      Quick Links
+                    </h3>
+                    <ChevronDown
+                      className={`w-6 h-6 transition-transform duration-300 ${
+                        activeSection === 'quick-links' ? 'rotate-180' : ''
+                      }`}
                     />
-                    <button className="px-6 py-3 uppercase border border-gray-600 hover:bg-white hover:text-black transition-colors text-sm">
-                      Sign up
-                    </button>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      activeSection === 'quick-links'
+                        ? 'max-h-96 opacity-100'
+                        : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="flex flex-col items-start py-3 space-y-2">
+                      <Link
+                        to="/"
+                        className="hover:text-gray-300 transition-colors text-sm"
+                      >
+                        Home
+                      </Link>
+                      <Link
+                        to="/products"
+                        className="hover:text-gray-300 transition-colors text-sm"
+                      >
+                        All Watches
+                      </Link>
+                      <Link
+                        to="/about"
+                        className="hover:text-gray-300 transition-colors text-sm"
+                      >
+                        About Us
+                      </Link>
+                      {user && (
+                        <>
+                          <Link
+                            to="/wishlist"
+                            className="hover:text-gray-300 transition-colors text-sm"
+                          >
+                            My Wishlist
+                          </Link>
+                          <Link
+                            to="/cart"
+                            className="hover:text-gray-300 transition-colors text-sm"
+                          >
+                            Shopping Cart
+                          </Link>
+                          <Link
+                            to="/orders"
+                            className="hover:text-gray-300 transition-colors text-sm"
+                          >
+                            My Orders
+                          </Link>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </li>
 
-              {/* Social Media */}
-              <li className="w-full pt-6">
-                <div className="flex flex-col space-y-3">
-                  <h3 className="font-semibold uppercase">Follow us</h3>
-                  <div className="flex gap-3 pb-4 border-b border-gray-700">
-                    <Facebook className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
-                    <Twitter className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
-                    <Instagram className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
-                    <Youtube className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
-                    <Linkedin className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
-                    <Mail className="w-8 h-8 hover:scale-110 transition-transform cursor-pointer" />
+              {/* Customer Service */}
+              <li className="w-full">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => toggleSection('customer-service')}
+                    className="flex items-center justify-between w-full py-2 border-b border-gray-700 hover:text-gray-300 transition-colors"
+                  >
+                    <h3 className="uppercase text-left font-semibold">
+                      Customer Service
+                    </h3>
+                    <ChevronDown
+                      className={`w-6 h-6 transition-transform duration-300 ${
+                        activeSection === 'customer-service' ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      activeSection === 'customer-service'
+                        ? 'max-h-96 opacity-100'
+                        : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="flex flex-col items-start py-3 space-y-2">
+                      <Link
+                        to="/contact"
+                        className="hover:text-gray-300 transition-colors text-sm"
+                      >
+                        Contact Us
+                      </Link>
+                      <p className="text-sm text-gray-300">Shipping & Delivery</p>
+                      <p className="text-sm text-gray-300">Returns & Refunds</p>
+                      <p className="text-sm text-gray-300">Warranty Information</p>
+                      <p className="text-sm text-gray-300">Authenticity Guarantee</p>
+                    </div>
                   </div>
-                </div>
-              </li>
-
-              {/* Links */}
-              <li className="w-full pt-4">
-                <div className="flex items-center text-sm">
-                  <button className="pr-5 border-r border-gray-600 hover:text-gray-300 transition-colors">
-                    Contact us
-                  </button>
-                  <button className="pl-5 hover:text-gray-300 transition-colors">
-                    Account / Login
-                  </button>
                 </div>
               </li>
 
               {/* Payment Methods */}
-              <li className="w-full pt-4">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="text-xs bg-gray-700 px-3 py-1 rounded">
+              <li className="w-full pt-6">
+                <h3 className="uppercase font-semibold mb-3 text-sm">
+                  We Accept
+                </h3>
+                <div className="flex items-center gap-3 flex-wrap pb-6 border-b border-gray-700">
+                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
                     VISA
                   </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1 rounded">
+                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
                     Mastercard
                   </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1 rounded">
+                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
                     Apple Pay
                   </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1 rounded">
+                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
                     Google Pay
                   </div>
                 </div>
               </li>
             </ul>
+
+            {/* Copyright Mobile */}
+            <div className="pt-6 text-center">
+              <p className="text-xs text-gray-400">
+                © {new Date().getFullYear()} Watch Utopia. All rights reserved.
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                Your premier destination for luxury timepieces
+              </p>
+            </div>
           </div>
 
           {/* Desktop View - Grid Layout */}
-          <div className="hidden lg:grid lg:grid-cols-5 gap-8">
-            {/* Shop Column */}
-            <div>
-              <h3 className="uppercase font-semibold mb-4 text-sm">Shop</h3>
-              <ul className="space-y-2">
-                {shopItems.map((item, index) => (
-                  <li
-                    key={index}
-                    className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* About Us Column */}
-            <div>
-              <h3 className="uppercase font-semibold mb-4 text-sm">About Us</h3>
-              <ul className="space-y-2">
-                {aboutItems.map((item, index) => (
-                  <li
-                    key={index}
-                    className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Customer Care Column */}
-            <div>
-              <h3 className="uppercase font-semibold mb-4 text-sm">
-                Customer Care
-              </h3>
-              <ul className="space-y-2">
-                {customerCareItems.map((item, index) => (
-                  <li
-                    key={index}
-                    className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Brands Column */}
-            <div>
-              <h3 className="uppercase font-semibold mb-4 text-sm">Brands</h3>
-              <div className="flex items-center gap-1 mb-3 text-xs text-gray-300 hover:text-white transition-colors cursor-pointer">
-                <span>Shop All Brands</span>
-                <ChevronRight className="w-3 h-3" />
+          <div className="hidden lg:block">
+            <div className="grid lg:grid-cols-4 gap-12 mb-8">
+              {/* About Column */}
+              <div>
+                <h3 className="uppercase font-semibold mb-4 text-sm">
+                  About Watch Utopia
+                </h3>
+                <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                  Your premier destination for luxury timepieces and exceptional
+                  craftsmanship. We offer authentic watches from the world's
+                  most prestigious brands.
+                </p>
+                <Link
+                  to="/about"
+                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  Learn more about us →
+                </Link>
               </div>
-              <p className="text-xs text-gray-400 mb-2">Featured Brands</p>
-              <ul className="space-y-2 max-h-64 overflow-y-auto">
-                {brandsArray.map((item, index) => (
-                  <li key={index}>
+
+              {/* Quick Links Column */}
+              <div>
+                <h3 className="uppercase font-semibold mb-4 text-sm">
+                  Quick Links
+                </h3>
+                <ul className="space-y-2">
+                  <li>
                     <Link
-                      to={item.linkTo}
+                      to="/"
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
-                      {item.brand}
+                      Home
                     </Link>
                   </li>
-                ))}
-              </ul>
+                  <li>
+                    <Link
+                      to="/products"
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      All Watches
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/about"
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      Contact
+                    </Link>
+                  </li>
+                  {user && (
+                    <>
+                      <li>
+                        <Link
+                          to="/wishlist"
+                          className="text-sm text-gray-300 hover:text-white transition-colors"
+                        >
+                          My Wishlist
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/cart"
+                          className="text-sm text-gray-300 hover:text-white transition-colors"
+                        >
+                          Shopping Cart
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/orders"
+                          className="text-sm text-gray-300 hover:text-white transition-colors"
+                        >
+                          My Orders
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
+
+              {/* Customer Service Column */}
+              <div>
+                <h3 className="uppercase font-semibold mb-4 text-sm">
+                  Customer Service
+                </h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      Contact Us
+                    </Link>
+                  </li>
+                  <li className="text-sm text-gray-300">Shipping & Delivery</li>
+                  <li className="text-sm text-gray-300">Returns & Refunds</li>
+                  <li className="text-sm text-gray-300">Warranty Information</li>
+                  <li className="text-sm text-gray-300">Authenticity Guarantee</li>
+                  <li className="text-sm text-gray-300">Payment Options</li>
+                </ul>
+              </div>
+
+              {/* Featured Brands Column */}
+              <div>
+                <h3 className="uppercase font-semibold mb-4 text-sm">
+                  Featured Brands
+                </h3>
+                <ul className="space-y-2 max-h-48 overflow-y-auto">
+                  {brandsArray.slice(0, 8).map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        to={item.linkTo}
+                        className="text-sm text-gray-300 hover:text-white transition-colors"
+                      >
+                        {item.brand}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to="/products"
+                  className="inline-flex items-center gap-1 mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  <span>View All Brands</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
 
-            {/* Newsletter Column */}
-            <div>
-              <h3 className="uppercase font-semibold mb-4 text-sm">
-                Subscribe
-              </h3>
-              <p className="text-sm text-gray-300 mb-4">
-                Sign up to our monthly newsletter
-              </p>
-              <div className="flex flex-col gap-2 mb-6">
-                <input
-                  className="bg-transparent border border-gray-600 py-2 px-3 focus:outline-none focus:border-white transition-colors text-sm"
-                  type="email"
-                  placeholder="Email address"
-                />
-                <button className="px-4 py-2 uppercase border border-gray-600 hover:bg-white hover:text-black transition-colors text-sm">
-                  Sign up
-                </button>
-              </div>
-
-              {/* Social Media */}
-              <h3 className="font-semibold uppercase mb-3 text-sm">
-                Follow us
-              </h3>
-              <div className="flex gap-3 mb-6">
-                <Facebook className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-                <Twitter className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-                <Instagram className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-                <Youtube className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-                <Linkedin className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-                <Mail className="w-7 h-7 hover:scale-110 transition-transform cursor-pointer" />
-              </div>
-
-              {/* Links */}
-              <div className="flex flex-col gap-2 text-sm mb-4">
-                <button className="text-left hover:text-gray-300 transition-colors">
-                  Contact us
-                </button>
-                <button className="text-left hover:text-gray-300 transition-colors">
-                  Account / Login
-                </button>
-              </div>
-
-              {/* Payment Methods */}
-              <div className="flex flex-wrap gap-2">
-                <div className="text-xs bg-gray-700 px-2 py-1 rounded">
-                  VISA
+            {/* Bottom Section */}
+            <div className="pt-8 border-t border-gray-700">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                {/* Copyright */}
+                <div className="text-sm text-gray-400">
+                  <p>
+                    © {new Date().getFullYear()} Watch Utopia. All rights reserved.
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Your premier destination for luxury timepieces
+                  </p>
                 </div>
-                <div className="text-xs bg-gray-700 px-2 py-1 rounded">
-                  Mastercard
-                </div>
-                <div className="text-xs bg-gray-700 px-2 py-1 rounded">
-                  Apple Pay
-                </div>
-                <div className="text-xs bg-gray-700 px-2 py-1 rounded">
-                  Google Pay
+
+                {/* Payment Methods */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-2 text-center">
+                    We Accept
+                  </p>
+                  <div className="flex gap-2">
+                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
+                      VISA
+                    </div>
+                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
+                      Mastercard
+                    </div>
+                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
+                      Apple Pay
+                    </div>
+                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
+                      Google Pay
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
