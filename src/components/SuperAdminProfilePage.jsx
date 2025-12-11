@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { supabase } from '../services/api/supabaseClient';
 import orderService from '../services/order/orderService';
@@ -21,6 +21,10 @@ export default function SuperAdminProfilePage({ user }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('all');
+  const brandSliderRef = useRef(null);
+  const [showBrandLeftButton, setShowBrandLeftButton] = useState(false);
+  const [showBrandRightButton, setShowBrandRightButton] = useState(true);
 
   // Product form state
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -355,6 +359,37 @@ export default function SuperAdminProfilePage({ user }) {
       setError('Failed to update order status: ' + err.message);
     }
   };
+
+  // Get unique brands for filter
+  const brands = [...new Set(products.map((product) => product.brand))].sort();
+
+  // Filter products by selected brand
+  const filteredProducts =
+    selectedBrand === 'all'
+      ? products
+      : products.filter((product) => product.brand === selectedBrand);
+
+  const scrollBrand = (direction) => {
+    const slider = brandSliderRef.current;
+    if (slider) {
+      const scrollAmount = 300;
+      slider.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const updateBrandButtonVisibility = () => {
+    const slider = brandSliderRef.current;
+    if (slider) {
+      setShowBrandLeftButton(slider.scrollLeft > 0);
+      setShowBrandRightButton(
+        slider.scrollLeft < slider.scrollWidth - slider.clientWidth - 10
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -433,6 +468,111 @@ export default function SuperAdminProfilePage({ user }) {
                 </button>
               )}
             </div>
+
+            {/* Brand Filter Slider */}
+            {!isAddingProduct && !editingProduct && products.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  Filter by Brand
+                </h3>
+                <div className="relative group">
+                  {/* Left Navigation Button */}
+                  {showBrandLeftButton && (
+                    <button
+                      onClick={() => scrollBrand('left')}
+                      className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                      aria-label="Scroll left"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </button>
+                  )}
+
+                  {/* Slider Container */}
+                  <div
+                    ref={brandSliderRef}
+                    onScroll={updateBrandButtonVisibility}
+                    className="overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide flex gap-3 py-4"
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                    }}
+                  >
+                    {/* All Brands Button */}
+                    <button
+                      onClick={() => setSelectedBrand('all')}
+                      className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                        selectedBrand === 'all'
+                          ? 'bg-indigo-600 text-white shadow-lg'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                      }`}
+                    >
+                      All Brands ({products.length})
+                    </button>
+
+                    {/* Brand Buttons */}
+                    {brands.map((brand) => {
+                      const count = products.filter(
+                        (p) => p.brand === brand
+                      ).length;
+                      return (
+                        <button
+                          key={brand}
+                          onClick={() => setSelectedBrand(brand)}
+                          className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
+                            selectedBrand === brand
+                              ? 'bg-indigo-600 text-white shadow-lg'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                          }`}
+                        >
+                          {brand} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Right Navigation Button */}
+                  {showBrandRightButton && (
+                    <button
+                      onClick={() => scrollBrand('right')}
+                      className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#161818] hover:bg-[#2a2c2c] text-white shadow-2xl rounded-full p-3 transition-all duration-200 items-center justify-center opacity-0 group-hover:opacity-100"
+                      aria-label="Scroll right"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+
+                {/* Results count */}
+                <p className="text-sm text-gray-600 mt-4">
+                  Showing {filteredProducts.length} of {products.length}{' '}
+                  products
+                </p>
+              </div>
+            )}
 
             {/* Add/Edit Product Form */}
             {(isAddingProduct || editingProduct) && (
@@ -621,6 +761,10 @@ export default function SuperAdminProfilePage({ user }) {
               <div className="text-center py-8 text-gray-500">
                 No products found. Add your first product!
               </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No products found for the selected brand.
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -644,7 +788,7 @@ export default function SuperAdminProfilePage({ user }) {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {products.map((product) => (
+                    {filteredProducts.map((product) => (
                       <tr key={product.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {product.brand}
