@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { supabase } from '../services/api/supabaseClient';
 import authService from '../services/auth/authServive.js';
+import dataService from '../services/data/dataService.js';
 import { Save, X, Plus } from 'lucide-react';
 
 export default function ProductEditPage() {
@@ -40,19 +40,14 @@ export default function ProductEditPage() {
         }
 
         // Fetch product
-        const { data, error } = await supabase
-          .from('brands')
-          .select('*')
-          .eq('id', id)
-          .single();
+        const result = await dataService.getProductById(id);
 
-        if (error) throw error;
-
-        if (!data) {
-          setError('Product not found');
+        if (!result.success || !result.data) {
+          setError(result.error || 'Product not found');
           return;
         }
 
+        const data = result.data;
         setProduct(data);
         setProductForm({
           brand: data.brand,
@@ -114,26 +109,18 @@ export default function ProductEditPage() {
         .substring(7)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('watch-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      // Upload using data service
+      const result = await dataService.uploadImage(
+        'watch-images',
+        file,
+        filePath
+      );
 
-      if (error) {
-        throw new Error(
-          `Upload failed: ${error.message || JSON.stringify(error)}`
-        );
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('watch-images').getPublicUrl(filePath);
-
-      return publicUrl;
+      return result.data.publicUrl;
     } catch (err) {
       throw new Error('Failed to upload image: ' + err.message);
     }
@@ -148,8 +135,8 @@ export default function ProductEditPage() {
 
       const filePath = urlParts.slice(bucketIndex + 1).join('/');
 
-      // Delete from storage
-      await supabase.storage.from('watch-images').remove([filePath]);
+      // Delete using data service
+      await dataService.deleteImage('watch-images', filePath);
     } catch (err) {
       console.error('Failed to delete old image:', err);
       // Don't throw - this is not critical
@@ -189,16 +176,10 @@ export default function ProductEditPage() {
         description: productForm.description?.trim() || null,
       };
 
-      const { data, error } = await supabase
-        .from('brands')
-        .update(updateData)
-        .eq('id', id)
-        .select();
+      const result = await dataService.updateProduct(id, updateData);
 
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        throw new Error('Failed to update product');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update product');
       }
 
       // Show success notification and redirect

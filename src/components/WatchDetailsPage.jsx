@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { supabase } from '../services/api/supabaseClient';
 import authService from '../services/auth/authServive.js';
 import wishlistService from '../services/wishlist/wishlistService.js';
 import cartService from '../services/cart/cartService.js';
+import dataService from '../services/data/dataService.js';
 import { Heart } from 'lucide-react';
 
 function WatchDetailsPage() {
@@ -28,47 +28,11 @@ function WatchDetailsPage() {
         const currentUser = await authService.getCurrentUser();
         setUser(currentUser);
 
-        // Try fetching from feauteredwatches table first
-        let { data, error: fetchError } = await supabase
-          .from('feauteredwatches')
-          .select('*')
-          .eq('id', id)
-          .single();
+        // Fetch product using centralized data service
+        const result = await dataService.getProductById(id);
 
-        // If not found, try brands table
-        if (!data || fetchError) {
-          const result = await supabase
-            .from('brands')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-          data = result.data;
-          fetchError = result.error;
-        }
-
-        if (fetchError) throw fetchError;
-
-        if (data) {
-          // Clean the image path - remove 'watches/' or 'img/' prefix if present
-          let cleanImagePath = data.image;
-          if (cleanImagePath.startsWith('watches/')) {
-            cleanImagePath = cleanImagePath.replace('watches/', '');
-          } else if (cleanImagePath.startsWith('img/')) {
-            cleanImagePath = cleanImagePath.replace('img/', '');
-          }
-
-          // Get public URL for the image
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
-          const watchData = {
-            ...data,
-            imageUrl: publicUrl,
-          };
-
-          setWatch(watchData);
+        if (result.success && result.data) {
+          setWatch(result.data);
 
           // Check if in wishlist
           if (currentUser) {

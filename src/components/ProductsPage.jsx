@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import { fetchAllWatches } from '../services/productService';
+import dataService from '../services/data/dataService.js';
 
 export default function ProductsPage() {
   const [watches, setWatches] = useState([]);
@@ -23,7 +23,7 @@ export default function ProductsPage() {
 
   const loadWatches = async () => {
     setLoading(true);
-    const result = await fetchAllWatches();
+    const result = await dataService.getAllProducts();
 
     if (result.success) {
       setWatches(result.data);

@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
 import authService from '../../services/auth/authServive.js';
-import {
-  ChevronDown,
-  ChevronRight,
-  User,
-  UserCheck,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, User, UserCheck } from 'lucide-react';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -377,10 +372,16 @@ export default function Layout() {
                       >
                         Contact Us
                       </Link>
-                      <p className="text-sm text-gray-300">Shipping & Delivery</p>
+                      <p className="text-sm text-gray-300">
+                        Shipping & Delivery
+                      </p>
                       <p className="text-sm text-gray-300">Returns & Refunds</p>
-                      <p className="text-sm text-gray-300">Warranty Information</p>
-                      <p className="text-sm text-gray-300">Authenticity Guarantee</p>
+                      <p className="text-sm text-gray-300">
+                        Warranty Information
+                      </p>
+                      <p className="text-sm text-gray-300">
+                        Authenticity Guarantee
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -525,8 +526,12 @@ export default function Layout() {
                   </li>
                   <li className="text-sm text-gray-300">Shipping & Delivery</li>
                   <li className="text-sm text-gray-300">Returns & Refunds</li>
-                  <li className="text-sm text-gray-300">Warranty Information</li>
-                  <li className="text-sm text-gray-300">Authenticity Guarantee</li>
+                  <li className="text-sm text-gray-300">
+                    Warranty Information
+                  </li>
+                  <li className="text-sm text-gray-300">
+                    Authenticity Guarantee
+                  </li>
                   <li className="text-sm text-gray-300">Payment Options</li>
                 </ul>
               </div>
@@ -564,7 +569,8 @@ export default function Layout() {
                 {/* Copyright */}
                 <div className="text-sm text-gray-400">
                   <p>
-                    © {new Date().getFullYear()} Watch Utopia. All rights reserved.
+                    © {new Date().getFullYear()} Watch Utopia. All rights
+                    reserved.
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     Your premier destination for luxury timepieces

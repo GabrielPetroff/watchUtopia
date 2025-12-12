@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { supabase } from '../services/api/supabaseClient';
 import orderService from '../services/order/orderService';
+import dataService from '../services/data/dataService.js';
 import {
   Plus,
   Edit2,
@@ -72,13 +72,13 @@ export default function SuperAdminProfilePage({ user }) {
     setLoading(true);
     setError('');
     try {
-      const { data, error } = await supabase
-        .from('brands')
-        .select('*')
-        .order('brand', { ascending: true });
+      const result = await dataService.getAllProducts();
 
-      if (error) throw error;
-      setProducts(data || []);
+      if (result.success) {
+        setProducts(result.data || []);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (err) {
       setError('Failed to fetch products: ' + err.message);
     } finally {
@@ -90,13 +90,13 @@ export default function SuperAdminProfilePage({ user }) {
     setLoading(true);
     setError('');
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('order_date', { ascending: false });
+      const result = await dataService.getAllOrders();
 
-      if (error) throw error;
-      setOrders(data || []);
+      if (result.success) {
+        setOrders(result.data || []);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (err) {
       setError('Failed to fetch orders: ' + err.message);
     } finally {
@@ -144,26 +144,18 @@ export default function SuperAdminProfilePage({ user }) {
         .substring(7)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('watch-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      // Upload using data service
+      const result = await dataService.uploadImage(
+        'watch-images',
+        file,
+        filePath
+      );
 
-      if (error) {
-        throw new Error(
-          `Upload failed: ${error.message || JSON.stringify(error)}`
-        );
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('watch-images').getPublicUrl(filePath);
-
-      return publicUrl;
+      return result.data.publicUrl;
     } catch (err) {
       throw new Error('Failed to upload image: ' + err.message);
     }
@@ -178,8 +170,8 @@ export default function SuperAdminProfilePage({ user }) {
 
       const filePath = urlParts.slice(bucketIndex + 1).join('/');
 
-      // Delete from storage
-      await supabase.storage.from('watch-images').remove([filePath]);
+      // Delete using data service
+      await dataService.deleteImage('watch-images', filePath);
     } catch (err) {
       console.error('Failed to delete old image:', err);
       // Don't throw - this is not critical
@@ -221,21 +213,16 @@ export default function SuperAdminProfilePage({ user }) {
         throw new Error('Please provide an image (file upload or URL)');
       }
 
-      const { error } = await supabase
-        .from('brands')
-        .insert([
-          {
-            brand: productForm.brand.trim(),
-            model: productForm.model.trim(),
-            price: parseFloat(productForm.price),
-            image: imageUrl,
-            tag: productForm.tag?.trim() || null,
-            description: productForm.description?.trim() || null,
-          },
-        ])
-        .select();
+      const result = await dataService.createProduct({
+        brand: productForm.brand.trim(),
+        model: productForm.model.trim(),
+        price: parseFloat(productForm.price),
+        image: imageUrl,
+        tag: productForm.tag?.trim() || null,
+        description: productForm.description?.trim() || null,
+      });
 
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
 
       setSuccess('Product added successfully!');
       resetProductForm();
@@ -285,16 +272,13 @@ export default function SuperAdminProfilePage({ user }) {
         description: productForm.description?.trim() || null,
       };
 
-      const { data, error } = await supabase
-        .from('brands')
-        .update(updateData)
-        .eq('id', editingProduct.id)
-        .select();
+      const result = await dataService.updateProduct(
+        editingProduct.id,
+        updateData
+      );
 
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        throw new Error('Failed to update product - no rows affected');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update product');
       }
 
       setSuccess('Product updated successfully!');
@@ -322,10 +306,8 @@ export default function SuperAdminProfilePage({ user }) {
       const product = products.find((p) => p.id === productId);
 
       // Delete from database
-      const { error } = await supabase
-        .from('brands')
-        .delete()
-        .eq('id', productId);
+      const result = await dataService.deleteProduct(productId);
+      if (!result.success) throw new Error(result.error);
 
       if (error) throw error;
 

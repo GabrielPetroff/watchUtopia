@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router';
-import { supabase } from '../services/api/supabaseClient';
 import authService from '../services/auth/authServive.js';
 import cartService from '../services/cart/cartService.js';
-import { getImageUrl } from '../services/imageService';
+import dataService from '../services/data/dataService.js';
 
 function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);
@@ -13,21 +12,11 @@ function FeaturedWatches() {
   // Fetch best sellers - most expensive watches from feauteredwatches table
   const fetchBestSellers = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('feauteredwatches')
-        .select('*')
-        .order('price', { ascending: false })
-        .limit(12);
+      const result = await dataService.getBestSellers(12);
 
-      if (error) throw error;
-
-      // Map through watches and get proper image URLs
-      const watchesWithImageUrls = (data || []).map((watch) => ({
-        ...watch,
-        imageUrl: getImageUrl(watch.image),
-      }));
-
-      setBestSellers(watchesWithImageUrls);
+      if (result.success) {
+        setBestSellers(result.data);
+      }
     } catch (error) {
       console.error('Error fetching best sellers:', error);
     }
@@ -36,21 +25,11 @@ function FeaturedWatches() {
   // Fetch latest releases from brands table (most recently added by ID)
   const fetchLatestReleases = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('brands')
-        .select('*')
-        .order('id', { ascending: false })
-        .limit(12);
+      const result = await dataService.getLatestReleases(12);
 
-      if (error) throw error;
-
-      // Map through watches and get proper image URLs
-      const watchesWithImageUrls = (data || []).map((watch) => ({
-        ...watch,
-        imageUrl: getImageUrl(watch.image),
-      }));
-
-      setLatestReleases(watchesWithImageUrls);
+      if (result.success) {
+        setLatestReleases(result.data);
+      }
     } catch (error) {
       console.error('Error fetching latest releases:', error);
     }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import orderService from '../services/order/orderService';
+import dataService from '../services/data/dataService.js';
 import {
   Package,
   Clock,
@@ -27,7 +28,7 @@ export default function UserProfilePage({ user }) {
     setLoading(true);
     setError('');
     try {
-      const result = await orderService.getUserOrders(user.id);
+      const result = await dataService.getUserOrders(user.id);
       if (result.success) {
         setOrders(result.data);
       } else {
@@ -42,7 +43,7 @@ export default function UserProfilePage({ user }) {
 
   const fetchUserStats = async () => {
     try {
-      const result = await orderService.getUserOrderStats(user.id);
+      const result = await dataService.getUserOrderStats(user.id);
       if (result.success) {
         setStats(result.data);
       }

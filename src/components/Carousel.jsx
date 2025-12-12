@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { supabase } from '../services/api/supabaseClient.js';
+import dataService from '../services/data/dataService.js';
 
 export default function Carousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -15,33 +15,14 @@ export default function Carousel() {
   async function loadAllImages() {
     setIsLoading(true);
 
-    const { data, error } = await supabase.storage
-      .from('Carousel-watches')
-      .list('', {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: 'name', order: 'asc' },
-      });
+    const result = await dataService.getCarouselImages();
 
-    if (error) {
-      console.error('Error loading images:', error);
-      setIsLoading(false);
-      return;
+    if (result.success) {
+      setWatchImages(result.data);
+    } else {
+      console.error('Error loading images:', result.error);
     }
 
-    const imageFiles = data.filter(
-      (file) =>
-        file.name &&
-        !file.name.startsWith('.') &&
-        file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)
-    );
-
-    const urls = imageFiles.map((file) => {
-      return supabase.storage.from('Carousel-watches').getPublicUrl(file.name)
-        .data.publicUrl;
-    });
-
-    setWatchImages(urls);
     setIsLoading(false);
   }
 
