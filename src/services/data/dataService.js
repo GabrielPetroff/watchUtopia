@@ -371,6 +371,54 @@ const dataService = {
       return { success: false, error: error.message };
     }
   },
+
+  // ==================== BRAND OPERATIONS ====================
+
+  /**
+   * Fetch brand logos from storage bucket
+   */
+  async getBrandLogos() {
+    try {
+      const { data, error } = await supabase.storage.from('brands').list('', {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: 'name', order: 'asc' },
+      });
+
+      if (error) throw error;
+
+      const imageFiles = (data || []).filter(
+        (file) =>
+          file.name &&
+          !file.name.startsWith('.') &&
+          file.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
+      );
+
+      const brands = imageFiles.map((file) => {
+        const publicUrl = supabase.storage
+          .from('brands')
+          .getPublicUrl(file.name).data.publicUrl;
+
+        // Extract brand name from filename (remove extension and format)
+        const brandName = file.name
+          .replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '')
+          .split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        return {
+          image: publicUrl,
+          brand: brandName,
+          filename: file.name,
+        };
+      });
+
+      return { success: true, data: brands };
+    } catch (error) {
+      console.error('Error fetching brand logos:', error);
+      return { success: false, error: error.message };
+    }
+  },
 };
 
 export default dataService;

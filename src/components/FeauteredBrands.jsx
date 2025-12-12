@@ -1,44 +1,30 @@
 import { Link } from 'react-router';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import dataService from '../services/data/dataService.js';
 
 function FeauturedBrands() {
   const sliderRef = useRef(null);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const watches = [
-    {
-      image: 'ap.png',
-      brand: 'Audemars Piguet',
-      linkTo: '/AudemarsPiguetPage',
-    },
-    {
-      image: 'breitling.png',
-      brand: 'Breitling',
-      linkTo: '/BreitlingPage',
-    },
-    {
-      image: 'cartier.png',
-      brand: 'Cartier',
-      linkTo: '/CartierPage',
-    },
-    { image: 'iwc.png', brand: 'IWC', linkTo: '/IwcPage' },
-    {
-      image: 'patek-philippe.png',
-      brand: 'Patek Philippe',
-      linkTo: '/PatekPhilippePage',
-    },
-    { image: 'omega.png', brand: 'Omega', linkTo: '/OmegaPage' },
-    { image: 'rolex.png', brand: 'Rolex', linkTo: '/RolexPage' },
-    {
-      image: 'tag-heuer.png',
-      brand: 'Tag Heuer',
-      linkTo: '/TagheurPage',
-    },
-    { image: 'tudor.png', brand: 'Tudor', linkTo: '/TudorPage' },
-    { image: 'vacheron.png', brand: 'Vacheron', linkTo: '/VacheronPage' },
-    { image: 'oris.png', brand: 'Oris', linkTo: '/OrisPage' },
-  ];
+  useEffect(() => {
+    loadBrands();
+  }, []);
+
+  const loadBrands = async () => {
+    setLoading(true);
+    const result = await dataService.getBrandLogos();
+
+    if (result.success) {
+      setBrands(result.data);
+    } else {
+      console.error('Error loading brands:', result.error);
+    }
+
+    setLoading(false);
+  };
 
   const scroll = (direction) => {
     const slider = sliderRef.current;
@@ -101,15 +87,22 @@ function FeauturedBrands() {
             msOverflowStyle: 'none',
           }}
         >
-          {watches.map((item, index) => (
-            <Link key={index} to={item.linkTo}>
-              <img
-                className="w-[140px] h-fit inline-block p-2 cursor-pointer hover:scale-105 ease-in-out duration-300"
-                src={item.image}
-                alt={item.brand}
-              />
-            </Link>
-          ))}
+          {loading ? (
+            <div className="text-center py-4">Loading brands...</div>
+          ) : (
+            brands.map((item, index) => (
+              <Link
+                key={index}
+                to={`/products?brand=${encodeURIComponent(item.brand)}`}
+              >
+                <img
+                  className="w-[140px] h-fit inline-block p-2 cursor-pointer hover:scale-105 ease-in-out duration-300"
+                  src={item.image}
+                  alt={item.brand}
+                />
+              </Link>
+            ))
+          )}
         </div>
 
         {/* Right Navigation Button */}

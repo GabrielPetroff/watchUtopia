@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import dataService from '../services/data/dataService.js';
 
 export default function ProductsPage() {
@@ -15,11 +15,18 @@ export default function ProductsPage() {
   const [showRightButton, setShowRightButton] = useState(true);
   const [showTagLeftButton, setShowTagLeftButton] = useState(false);
   const [showTagRightButton, setShowTagRightButton] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     loadWatches();
-  }, []);
+
+    // Check if there's a brand parameter in the URL
+    const brandParam = searchParams.get('brand');
+    if (brandParam) {
+      setSelectedBrand(brandParam);
+    }
+  }, [searchParams]);
 
   const loadWatches = async () => {
     setLoading(true);
