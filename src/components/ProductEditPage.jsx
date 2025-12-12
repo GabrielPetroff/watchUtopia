@@ -25,6 +25,12 @@ export default function ProductEditPage() {
 
   useEffect(() => {
     const checkAuthAndFetchProduct = async () => {
+      // Reset state when id changes to prevent showing stale data
+      setLoading(true);
+      setError('');
+      setProduct(null);
+      setImageFile(null);
+
       try {
         // Check if user is authenticated and is super-admin
         const user = await authService.getCurrentUser();
@@ -39,8 +45,8 @@ export default function ProductEditPage() {
           return;
         }
 
-        // Fetch product
-        const result = await dataService.getProductById(id);
+        // Fetch product from brands table only (for editing)
+        const result = await dataService.getProductById(id, true);
 
         if (!result.success || !result.data) {
           setError(result.error || 'Product not found');

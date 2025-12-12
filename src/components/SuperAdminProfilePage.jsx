@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import orderService from '../services/order/orderService';
 import dataService from '../services/data/dataService.js';
 import {
   Plus,
@@ -328,14 +327,24 @@ export default function SuperAdminProfilePage({ user }) {
   const handleOrderStatusToggle = async (order) => {
     const newStatus = order.status === 'delivered' ? 'processing' : 'delivered';
 
+    setError('');
+    setSuccess('');
+
     try {
-      const result = await orderService.updateOrderStatus(order.id, newStatus);
+      const result = await dataService.updateOrderStatus(order.id, newStatus);
 
       if (result.success) {
+        // Update the local state immediately for instant UI feedback
+        setOrders((prevOrders) =>
+          prevOrders.map((o) =>
+            o.id === order.id ? { ...o, status: newStatus } : o
+          )
+        );
         setSuccess(`Order status updated to ${newStatus}`);
-        fetchAllOrders();
+        // Fetch fresh data from server to ensure consistency
+        await fetchAllOrders();
       } else {
-        setError(result.message || 'Failed to update order status');
+        setError(result.error || 'Failed to update order status');
       }
     } catch (err) {
       setError('Failed to update order status: ' + err.message);
@@ -786,9 +795,10 @@ export default function SuperAdminProfilePage({ user }) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
-                            onClick={() =>
-                              navigate(`/product/${product.id}/edit`)
-                            }
+                            onClick={() => {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              navigate(`/product/${product.id}/edit`);
+                            }}
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
                             title="Edit product"
                           >

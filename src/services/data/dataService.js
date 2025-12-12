@@ -36,18 +36,15 @@ const dataService = {
   /**
    * Fetch a single product by ID
    * Tries featured watches table first, then brands table
+   * @param {string} id - Product ID
+   * @param {boolean} brandsOnly - If true, only fetch from brands table (for editing)
    */
-  async getProductById(id) {
+  async getProductById(id, brandsOnly = false) {
     try {
-      // Try featured watches first
-      let { data, error } = await supabase
-        .from('feauteredwatches')
-        .select('*')
-        .eq('id', id)
-        .single();
+      let data, error;
 
-      // If not found in featured, try brands table
-      if (!data || error) {
+      if (brandsOnly) {
+        // For editing, only fetch from brands table
         const result = await supabase
           .from('brands')
           .select('*')
@@ -55,6 +52,27 @@ const dataService = {
           .single();
         data = result.data;
         error = result.error;
+      } else {
+        // Try featured watches first
+        const featuredResult = await supabase
+          .from('feauteredwatches')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        // If not found in featured, try brands table
+        if (!featuredResult.data || featuredResult.error) {
+          const result = await supabase
+            .from('brands')
+            .select('*')
+            .eq('id', id)
+            .single();
+          data = result.data;
+          error = result.error;
+        } else {
+          data = featuredResult.data;
+          error = featuredResult.error;
+        }
       }
 
       if (error) throw error;
@@ -205,6 +223,12 @@ const dataService = {
 
       if (error) throw error;
 
+      console.log('getAllOrders fetched:', data?.length, 'orders');
+      console.log(
+        'Order IDs:',
+        data?.map((o) => o.id.slice(0, 8))
+      );
+
       return { success: true, data: data || [] };
     } catch (error) {
       console.error('Error fetching all orders:', error);
@@ -248,6 +272,10 @@ const dataService = {
       const stats = {
         totalOrders: orders.length,
         pendingOrders: orders.filter((o) => o.status === 'pending').length,
+        processingOrders: orders.filter((o) => o.status === 'processing')
+          .length,
+        shippedOrders: orders.filter((o) => o.status === 'shipped').length,
+        deliveredOrders: orders.filter((o) => o.status === 'delivered').length,
         completedOrders: orders.filter((o) => o.status === 'delivered').length,
         totalSpent: orders.reduce((sum, order) => sum + order.total_amount, 0),
       };
@@ -255,6 +283,44 @@ const dataService = {
       return { success: true, data: stats };
     } catch (error) {
       console.error('Error fetching user order stats:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Update order status (admin only)
+   */
+  async updateOrderStatus(orderId, status) {
+    try {
+      const updateData = { status };
+
+      // Automatically set shipped_at when status changes to shipped
+      if (status === 'shipped') {
+        updateData.shipped_at = new Date().toISOString();
+      }
+
+      // Automatically set delivered_at when status changes to delivered
+      if (status === 'delivered') {
+        updateData.delivered_at = new Date().toISOString();
+      }
+
+      const { data, error } = await supabase
+        .from('orders')
+        .update(updateData)
+        .eq('id', orderId)
+        .select();
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        success: true,
+        data: data?.[0] || null,
+        message: 'Order status updated successfully',
+      };
+    } catch (error) {
+      console.error('Error updating order status:', error);
       return { success: false, error: error.message };
     }
   },

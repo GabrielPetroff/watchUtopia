@@ -12,6 +12,10 @@ export default function WishlistPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     async function loadWishlist() {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);

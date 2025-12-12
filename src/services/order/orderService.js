@@ -143,8 +143,7 @@ const orderService = {
         .from('orders')
         .update(updateData)
         .eq('id', orderId)
-        .select()
-        .single();
+        .select();
 
       if (error) {
         const handledError = handleSupabaseError(error);
@@ -153,9 +152,10 @@ const orderService = {
         }
       }
 
+      // Return the first item from the array
       return {
         success: true,
-        data,
+        data: data?.[0] || null,
         message: 'Order status updated successfully',
       };
     } catch (error) {
