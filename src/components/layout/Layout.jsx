@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
 import authService from '../../services/auth/authServive.js';
-import { ChevronDown, ChevronRight, User, UserCheck } from 'lucide-react';
+import dataService from '../../services/data/dataService.js';
+import cartService from '../../services/cart/cartService.js';
+import {
+  ChevronDown,
+  ChevronRight,
+  User,
+  UserCheck,
+  ShoppingCart,
+} from 'lucide-react';
 
 export default function Layout() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState(null);
+  const [brands, setBrands] = useState([]);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const toggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
   };
@@ -16,13 +26,45 @@ export default function Layout() {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
       setLoading(false);
+
+      // Fetch cart items count if user is logged in
+      if (currentUser) {
+        fetchCartCount(currentUser.id);
+      }
     }
     checkUser();
+
+    // Fetch brands for footer
+    async function fetchBrands() {
+      const result = await dataService.getAllProducts();
+      if (result.success) {
+        // Get unique brands
+        const uniqueBrands = [
+          ...new Set(result.data.map((product) => product.brand)),
+        ]
+          .filter(Boolean)
+          .sort()
+          .map((brandName) => ({
+            brand: brandName,
+            linkTo: `/products?brand=${encodeURIComponent(brandName)}`,
+          }));
+        setBrands(uniqueBrands);
+      }
+    }
+    fetchBrands();
 
     // Listen for auth state changes
     const { data: authListener } = authService.onAuthStateChange(
       (event, session) => {
-        setUser(session?.user ?? null);
+        const newUser = session?.user ?? null;
+        setUser(newUser);
+
+        // Update cart count when auth state changes
+        if (newUser) {
+          fetchCartCount(newUser.id);
+        } else {
+          setCartItemCount(0);
+        }
       }
     );
 
@@ -32,29 +74,25 @@ export default function Layout() {
     };
   }, []);
 
+  const fetchCartCount = async (userId) => {
+    const result = await cartService.getCartItems(userId);
+    if (result.success) {
+      const totalCount = result.data.reduce(
+        (sum, item) => sum + (item.quantity || 1),
+        0
+      );
+      setCartItemCount(totalCount);
+    }
+  };
+
   const handleLogout = async () => {
     await authService.logout();
     setUser(null);
   };
 
-  const brandsArray = [
-    { brand: 'Longines', linkTo: '/LonginesPage' },
-    { brand: 'Rolex', linkTo: '/RolexPage' },
-    { brand: 'Breitling', linkTo: '/BreitlingPage' },
-    { brand: 'Vacheron Constantin', linkTo: '/VacheronConstantinPage' },
-    { brand: 'Baume & Mercier', linkTo: '/BaumeMercierPage' },
-    { brand: 'Tissot', linkTo: '/TissotPage' },
-    { brand: 'Oris', linkTo: '/OrisPage' },
-    { brand: 'Hamilton', linkTo: '/HamiltonPage' },
-    { brand: 'Mido', linkTo: '/MidoPage' },
-    { brand: 'Breguet', linkTo: '/BreguetPage' },
-    { brand: 'Omega', linkTo: '/OmegaPage' },
-    { brand: 'Junghans', linkTo: '/JunghansPage' },
-    { brand: 'Nomos', linkTo: '/NomosPage' },
-    { brand: 'Jaeger LeCoultre', linkTo: '/JaegerLeCoultrePage' },
-    { brand: 'Audemars Piguet', linkTo: '/AudemarsPiguetPage' },
-    { brand: 'Patek Philippe', linkTo: '/PatekPhilippePage' },
-  ];
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const BrandsSection = () => (
     <li className="w-full">
@@ -78,10 +116,11 @@ export default function Layout() {
           }`}
         >
           <div className="grid grid-cols-2 gap-3 py-3">
-            {brandsArray.map((item, index) => (
+            {brands.map((item, index) => (
               <Link
                 key={index}
                 to={item.linkTo}
+                onClick={scrollToTop}
                 className="text-sm hover:text-gray-300 transition-colors"
               >
                 {item.brand}
@@ -145,38 +184,6 @@ export default function Layout() {
                 </Link>
               </li>
 
-              {user && (
-                <>
-                  <li className="relative group">
-                    <Link
-                      to="/wishlist"
-                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
-                    >
-                      Wishlist
-                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                  </li>
-                  <li className="relative group">
-                    <Link
-                      to="/cart"
-                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
-                    >
-                      Cart
-                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                  </li>
-                  <li className="relative group">
-                    <Link
-                      to="/orders"
-                      className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
-                    >
-                      Orders
-                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                  </li>
-                </>
-              )}
-
               {!user && (
                 <li className="relative group">
                   <Link
@@ -184,6 +191,30 @@ export default function Layout() {
                     className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
                   >
                     Register
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                  </Link>
+                </li>
+              )}
+
+              {!user && (
+                <li className="relative group">
+                  <Link
+                    to="/login"
+                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                  >
+                    Login
+                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                  </Link>
+                </li>
+              )}
+
+              {user && (
+                <li className="relative group">
+                  <Link
+                    to="/wishlist"
+                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                  >
+                    Wishlist
                     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 </li>
@@ -204,7 +235,7 @@ export default function Layout() {
                 </Link>
               </li>
 
-              {user ? (
+              {user && (
                 <li className="relative group">
                   <button
                     onClick={handleLogout}
@@ -214,13 +245,15 @@ export default function Layout() {
                     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                   </button>
                 </li>
-              ) : (
+              )}
+
+              {user && (
                 <li className="relative group">
                   <Link
-                    to="/login"
+                    to="/cart"
                     className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
                   >
-                    Login
+                    Cart ({cartItemCount})
                     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 </li>
@@ -299,18 +332,21 @@ export default function Layout() {
                     <div className="flex flex-col items-start py-3 space-y-2">
                       <Link
                         to="/"
+                        onClick={scrollToTop}
                         className="hover:text-gray-300 transition-colors text-sm"
                       >
                         Home
                       </Link>
                       <Link
                         to="/products"
+                        onClick={scrollToTop}
                         className="hover:text-gray-300 transition-colors text-sm"
                       >
                         All Watches
                       </Link>
                       <Link
                         to="/about"
+                        onClick={scrollToTop}
                         className="hover:text-gray-300 transition-colors text-sm"
                       >
                         About Us
@@ -319,18 +355,21 @@ export default function Layout() {
                         <>
                           <Link
                             to="/wishlist"
+                            onClick={scrollToTop}
                             className="hover:text-gray-300 transition-colors text-sm"
                           >
                             My Wishlist
                           </Link>
                           <Link
                             to="/cart"
+                            onClick={scrollToTop}
                             className="hover:text-gray-300 transition-colors text-sm"
                           >
                             Shopping Cart
                           </Link>
                           <Link
                             to="/orders"
+                            onClick={scrollToTop}
                             className="hover:text-gray-300 transition-colors text-sm"
                           >
                             My Orders
@@ -368,20 +407,18 @@ export default function Layout() {
                     <div className="flex flex-col items-start py-3 space-y-2">
                       <Link
                         to="/contact"
+                        onClick={scrollToTop}
                         className="hover:text-gray-300 transition-colors text-sm"
                       >
                         Contact Us
                       </Link>
-                      <p className="text-sm text-gray-300">
+                      <Link
+                        to="/shipping"
+                        onClick={scrollToTop}
+                        className="hover:text-gray-300 transition-colors text-sm"
+                      >
                         Shipping & Delivery
-                      </p>
-                      <p className="text-sm text-gray-300">Returns & Refunds</p>
-                      <p className="text-sm text-gray-300">
-                        Warranty Information
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        Authenticity Guarantee
-                      </p>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -435,6 +472,7 @@ export default function Layout() {
                 </p>
                 <Link
                   to="/about"
+                  onClick={scrollToTop}
                   className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Learn more about us →
@@ -450,6 +488,7 @@ export default function Layout() {
                   <li>
                     <Link
                       to="/"
+                      onClick={scrollToTop}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       Home
@@ -458,6 +497,7 @@ export default function Layout() {
                   <li>
                     <Link
                       to="/products"
+                      onClick={scrollToTop}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       All Watches
@@ -466,6 +506,7 @@ export default function Layout() {
                   <li>
                     <Link
                       to="/about"
+                      onClick={scrollToTop}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       About Us
@@ -474,6 +515,7 @@ export default function Layout() {
                   <li>
                     <Link
                       to="/contact"
+                      onClick={scrollToTop}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       Contact
@@ -484,6 +526,7 @@ export default function Layout() {
                       <li>
                         <Link
                           to="/wishlist"
+                          onClick={scrollToTop}
                           className="text-sm text-gray-300 hover:text-white transition-colors"
                         >
                           My Wishlist
@@ -492,6 +535,7 @@ export default function Layout() {
                       <li>
                         <Link
                           to="/cart"
+                          onClick={scrollToTop}
                           className="text-sm text-gray-300 hover:text-white transition-colors"
                         >
                           Shopping Cart
@@ -500,6 +544,7 @@ export default function Layout() {
                       <li>
                         <Link
                           to="/orders"
+                          onClick={scrollToTop}
                           className="text-sm text-gray-300 hover:text-white transition-colors"
                         >
                           My Orders
@@ -519,20 +564,21 @@ export default function Layout() {
                   <li>
                     <Link
                       to="/contact"
+                      onClick={scrollToTop}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       Contact Us
                     </Link>
                   </li>
-                  <li className="text-sm text-gray-300">Shipping & Delivery</li>
-                  <li className="text-sm text-gray-300">Returns & Refunds</li>
-                  <li className="text-sm text-gray-300">
-                    Warranty Information
+                  <li>
+                    <Link
+                      to="/shipping"
+                      onClick={scrollToTop}
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      Shipping & Delivery
+                    </Link>
                   </li>
-                  <li className="text-sm text-gray-300">
-                    Authenticity Guarantee
-                  </li>
-                  <li className="text-sm text-gray-300">Payment Options</li>
                 </ul>
               </div>
 
@@ -542,10 +588,11 @@ export default function Layout() {
                   Featured Brands
                 </h3>
                 <ul className="space-y-2 max-h-48 overflow-y-auto">
-                  {brandsArray.slice(0, 8).map((item, index) => (
+                  {brands.slice(0, 8).map((item, index) => (
                     <li key={index}>
                       <Link
                         to={item.linkTo}
+                        onClick={scrollToTop}
                         className="text-sm text-gray-300 hover:text-white transition-colors"
                       >
                         {item.brand}
@@ -555,6 +602,7 @@ export default function Layout() {
                 </ul>
                 <Link
                   to="/products"
+                  onClick={scrollToTop}
                   className="inline-flex items-center gap-1 mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   <span>View All Brands</span>

@@ -13,6 +13,8 @@ import AboutUsPage from '../components/AboutUsPage.jsx';
 import CartPage from '../components/CartPage.jsx';
 import CheckoutPage from '../components/CheckoutPage.jsx';
 import ProductEditPage from '../components/ProductEditPage.jsx';
+import ContactUsPage from '../components/ContactUsPage.jsx';
+import ShippingDeliveryPage from '../components/ShippingDeliveryPage.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ const routes = createBrowserRouter([
       {
         path: '/about',
         element: <AboutUsPage />,
+      },
+      {
+        path: '/contact',
+        element: <ContactUsPage />,
+      },
+      {
+        path: '/shipping',
+        element: <ShippingDeliveryPage />,
       },
       {
         path: '/watch/:id',

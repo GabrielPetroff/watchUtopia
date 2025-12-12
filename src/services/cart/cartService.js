@@ -1,4 +1,5 @@
 import { supabase } from '../api/supabaseClient.js';
+import { getImageUrl } from '../imageService.js';
 
 const cartService = {
   /**
@@ -15,31 +16,10 @@ const cartService = {
       if (error) throw error;
 
       // Map through cart items and get public URLs for images
-      const cartItemsWithImageUrls = (data || []).map((item) => {
-        if (!item.image) {
-          return {
-            ...item,
-            imageUrl: '/placeholder-watch.jpg',
-          };
-        }
-
-        // Clean the image path - remove 'watches/' or 'img/' prefix if present
-        let cleanImagePath = item.image;
-        if (cleanImagePath.startsWith('watches/')) {
-          cleanImagePath = cleanImagePath.replace('watches/', '');
-        } else if (cleanImagePath.startsWith('img/')) {
-          cleanImagePath = cleanImagePath.replace('img/', '');
-        }
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('watches').getPublicUrl(cleanImagePath);
-
-        return {
-          ...item,
-          imageUrl: publicUrl,
-        };
-      });
+      const cartItemsWithImageUrls = (data || []).map((item) => ({
+        ...item,
+        imageUrl: getImageUrl(item.image),
+      }));
 
       return { success: true, data: cartItemsWithImageUrls };
     } catch (error) {
