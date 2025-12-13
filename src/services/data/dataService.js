@@ -142,6 +142,34 @@ const dataService = {
   },
 
   /**
+   * Increment times_bought for a product
+   * @param {string} productId - Product ID
+   * @param {number} quantity - Quantity to increment by (default: 1)
+   */
+  async incrementTimesBought(productId, quantity = 1) {
+    try {
+      // Use RPC function to bypass RLS
+      const { data, error } = await supabase.rpc('increment_times_bought', {
+        product_id: productId,
+        quantity_to_add: quantity,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        success: true,
+        data: data,
+        message: 'Times bought updated successfully',
+      };
+    } catch (error) {
+      console.error('Error updating times bought:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Delete a product
    */
   async deleteProduct(id) {
@@ -160,14 +188,16 @@ const dataService = {
   // ==================== FEATURED WATCHES OPERATIONS ====================
 
   /**
-   * Fetch best selling watches from featured watches table
+   * Fetch best selling watches based on times_bought from brands table
    */
   async getBestSellers(limit = 12) {
     try {
       const { data, error } = await supabase
-        .from('feauteredwatches')
-        .select('*')
-        .order('price', { ascending: false })
+        .from('brands')
+        .select('id, brand, model, price, image, times_bought')
+        .not('times_bought', 'is', null)
+        .gt('times_bought', 0)
+        .order('times_bought', { ascending: false })
         .limit(limit);
 
       if (error) throw error;

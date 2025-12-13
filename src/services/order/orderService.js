@@ -1,5 +1,6 @@
 import { supabase } from '../api/supabaseClient.js';
 import { handleSupabaseError } from '../api/supabaseClient.js';
+import dataService from '../data/dataService.js';
 
 const orderService = {
   /**
@@ -105,6 +106,13 @@ const orderService = {
         const handledError = handleSupabaseError(orderError);
         if (handledError) {
           throw handledError;
+        }
+      }
+
+      // Update times_bought for each product
+      for (const item of items) {
+        if (item.productId) {
+          await dataService.incrementTimesBought(item.productId, item.quantity);
         }
       }
 
