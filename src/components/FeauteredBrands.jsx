@@ -48,8 +48,8 @@ function FeauturedBrands() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full max-w-7xl mx-auto p-4 overflow-y-auto h-h-screen md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      <h3 className="col-span-3 text-xs text-center uppercase md:col-span-4 lg:col-span-5 md:text-lg lg:text-xl">
+    <div className="relative flex flex-col items-center justify-center w-full max-w-7xl mx-auto px-4 py-6 sm:py-8 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <h3 className="col-span-3 text-sm sm:text-base text-center uppercase md:col-span-4 lg:col-span-5 md:text-lg lg:text-xl mb-4">
         Shop popular brands
       </h3>
 

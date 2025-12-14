@@ -2,14 +2,14 @@ import { Clock, Award, ShieldCheck, Heart, Globe, Users } from 'lucide-react';
 
 export default function AboutUsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#F0F8FF' }}>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-24">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+      <section className="relative bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-12 sm:py-16 md:py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             Welcome to Watch Utopia
           </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed">
             Your premier destination for luxury timepieces and exceptional
             craftsmanship
           </p>
@@ -17,10 +17,12 @@ export default function AboutUsPage() {
       </section>
 
       {/* Story Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
+              Our Story
+            </h2>
             <div className="space-y-4 text-gray-700 leading-relaxed">
               <p>
                 Watch Utopia was founded with a singular vision: to create a
@@ -55,13 +57,16 @@ export default function AboutUsPage() {
       </section>
 
       {/* Values Section */}
-      <section className="bg-gray-50 py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
+      <section className="bg-gray-50 py-12 sm:py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-900 mb-8 sm:mb-12 lg:mb-16">
             What We Stand For
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
+            <div
+              className=" p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
                 <ShieldCheck className="w-8 h-8 text-indigo-600" />
               </div>
@@ -75,7 +80,10 @@ export default function AboutUsPage() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div
+              className=" p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
                 <Award className="w-8 h-8 text-purple-600" />
               </div>
@@ -89,7 +97,10 @@ export default function AboutUsPage() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div
+              className=" p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
                 <Heart className="w-8 h-8 text-pink-600" />
               </div>
@@ -107,12 +118,15 @@ export default function AboutUsPage() {
       </section>
 
       {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-900 mb-8 sm:mb-12 lg:mb-16">
           Why Choose Watch Utopia
         </h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="flex gap-4 items-start p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+        <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
+          <div
+            className="flex gap-4 items-start p-6  rounded-xl shadow-md hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-blue-100 p-3 rounded-lg flex-shrink-0">
               <Globe className="w-6 h-6 text-blue-600" />
             </div>
@@ -127,7 +141,10 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="flex gap-4 items-start p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+          <div
+            className="flex gap-4 items-start p-6  rounded-xl shadow-md hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-green-100 p-3 rounded-lg flex-shrink-0">
               <Users className="w-6 h-6 text-green-600" />
             </div>
@@ -143,7 +160,10 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="flex gap-4 items-start p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+          <div
+            className="flex gap-4 items-start p-6  rounded-xl shadow-md hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-purple-100 p-3 rounded-lg flex-shrink-0">
               <ShieldCheck className="w-6 h-6 text-purple-600" />
             </div>
@@ -158,7 +178,10 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="flex gap-4 items-start p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+          <div
+            className="flex gap-4 items-start p-6  rounded-xl shadow-md hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-indigo-100 p-3 rounded-lg flex-shrink-0">
               <Award className="w-6 h-6 text-indigo-600" />
             </div>
@@ -176,18 +199,19 @@ export default function AboutUsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">
+      <section className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-12 sm:py-16 lg:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
             Begin Your Watch Journey Today
           </h2>
-          <p className="text-xl mb-8 leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 leading-relaxed">
             Explore our carefully curated collection of luxury timepieces and
             find the watch that speaks to your style and passion.
           </p>
           <a
             href="/products"
-            className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors shadow-lg"
+            className="inline-block text-indigo-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-colors shadow-lg"
+            style={{ backgroundColor: '#F0F8FF' }}
           >
             Browse Our Collection
           </a>

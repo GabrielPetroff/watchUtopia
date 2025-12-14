@@ -10,7 +10,7 @@ import {
 
 export default function ShippingDeliveryPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#F0F8FF' }}>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-6">
@@ -24,7 +24,10 @@ export default function ShippingDeliveryPage() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Shipping Overview */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div
+            className=" p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
               <Truck className="w-8 h-8 text-indigo-600" />
             </div>
@@ -37,7 +40,10 @@ export default function ShippingDeliveryPage() {
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div
+            className=" p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
               <Shield className="w-8 h-8 text-indigo-600" />
             </div>
@@ -50,7 +56,10 @@ export default function ShippingDeliveryPage() {
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div
+            className=" p-8 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
               <Globe className="w-8 h-8 text-indigo-600" />
             </div>
@@ -70,7 +79,10 @@ export default function ShippingDeliveryPage() {
             Shipping Options
           </h2>
           <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-start gap-4">
                 <Package className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
                 <div className="flex-grow">
@@ -98,7 +110,10 @@ export default function ShippingDeliveryPage() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-start gap-4">
                 <Truck className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
                 <div className="flex-grow">
@@ -182,7 +197,10 @@ export default function ShippingDeliveryPage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
             International Shipping
           </h2>
-          <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+          <div
+            className=" p-8 rounded-lg shadow-md border border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -251,7 +269,10 @@ export default function ShippingDeliveryPage() {
             Shipping FAQs
           </h2>
           <div className="space-y-4">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Can I track my order?
               </h3>
@@ -262,7 +283,10 @@ export default function ShippingDeliveryPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 What if I'm not home for delivery?
               </h3>
@@ -274,7 +298,10 @@ export default function ShippingDeliveryPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Is my shipment insured?
               </h3>
@@ -285,7 +312,10 @@ export default function ShippingDeliveryPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Can I change my delivery address after ordering?
               </h3>
@@ -297,7 +327,10 @@ export default function ShippingDeliveryPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Do you ship to P.O. boxes?
               </h3>
@@ -308,7 +341,10 @@ export default function ShippingDeliveryPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 What happens if my package is delayed?
               </h3>
@@ -333,7 +369,8 @@ export default function ShippingDeliveryPage() {
           </p>
           <a
             href="/contact"
-            className="inline-block bg-white text-indigo-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors"
+            className="inline-block text-indigo-600 font-semibold py-3 px-8 rounded-lg transition-colors"
+            style={{ backgroundColor: '#F0F8FF' }}
           >
             Contact Us
           </a>

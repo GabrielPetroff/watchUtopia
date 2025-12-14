@@ -388,9 +388,12 @@ export default function SuperAdminProfilePage({ user }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: '#F0F8FF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div
+          className="rounded-lg shadow-md p-6 mb-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Super Admin Dashboard
           </h1>
@@ -398,7 +401,10 @@ export default function SuperAdminProfilePage({ user }) {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-6">
+        <div
+          className=" rounded-lg shadow-md mb-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               <button
@@ -441,7 +447,10 @@ export default function SuperAdminProfilePage({ user }) {
 
         {/* Products Tab */}
         {activeTab === 'products' && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div
+            className=" rounded-lg shadow-md p-6"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">
                 Products Management
@@ -566,7 +575,8 @@ export default function SuperAdminProfilePage({ user }) {
             {(isAddingProduct || editingProduct) && (
               <form
                 onSubmit={editingProduct ? handleEditProduct : handleAddProduct}
-                className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200"
+                className="mb-8 p-6  rounded-lg border border-gray-200"
+                style={{ backgroundColor: '#F0F8FF' }}
               >
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-semibold text-gray-900">
@@ -700,7 +710,10 @@ export default function SuperAdminProfilePage({ user }) {
 
                     {/* File Upload Option */}
                     <div className="mb-3">
-                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <label
+                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer  hover:bg-gray-100"
+                        style={{ backgroundColor: '#F0F8FF' }}
+                      >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Plus className="w-8 h-8 mb-2 text-gray-500" />
                           <p className="mb-2 text-sm text-gray-500">
@@ -728,7 +741,10 @@ export default function SuperAdminProfilePage({ user }) {
                         <div className="w-full border-t border-gray-300"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-gray-50 text-gray-500">
+                        <span
+                          className="px-2  text-gray-500"
+                          style={{ backgroundColor: '#F0F8FF' }}
+                        >
                           Or use image URL
                         </span>
                       </div>
@@ -786,7 +802,7 @@ export default function SuperAdminProfilePage({ user }) {
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="" style={{ backgroundColor: '#F0F8FF' }}>
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Brand
@@ -805,9 +821,16 @@ export default function SuperAdminProfilePage({ user }) {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody
+                    className=" divide-y divide-gray-200"
+                    style={{ backgroundColor: '#F0F8FF' }}
+                  >
                     {filteredProducts.map((product) => (
-                      <tr key={product.id} className="hover:bg-gray-50">
+                      <tr
+                        key={product.id}
+                        className="hover:"
+                        style={{ backgroundColor: '#F0F8FF' }}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {product.brand}
                         </td>
@@ -850,7 +873,10 @@ export default function SuperAdminProfilePage({ user }) {
 
         {/* Orders Tab */}
         {activeTab === 'orders' && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div
+            className=" rounded-lg shadow-md p-6"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               All Orders
             </h2>
@@ -1068,7 +1094,8 @@ export default function SuperAdminProfilePage({ user }) {
                               {order.items.map((item, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex items-center gap-3 text-sm bg-gray-50 p-2 rounded"
+                                  className="flex items-center gap-3 text-sm  p-2 rounded"
+                                  style={{ backgroundColor: '#F0F8FF' }}
                                 >
                                   {item.imageUrl && (
                                     <img

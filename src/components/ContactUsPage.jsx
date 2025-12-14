@@ -40,25 +40,27 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#F0F8FF' }}>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-5xl font-bold mb-4">Get in Touch</h1>
-          <p className="text-xl text-indigo-100">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-12 sm:py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
+            Get in Touch
+          </h1>
+          <p className="text-base sm:text-lg lg:text-xl text-indigo-100">
             Have questions about our luxury timepieces? We're here to help.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           {/* Contact Information */}
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
               Contact Information
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
               Reach out to us through any of these channels, and our team of
               watch experts will get back to you promptly.
             </p>
@@ -141,10 +143,10 @@ export default function ContactUsPage() {
 
           {/* Contact Form */}
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
               Send Us a Message
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
                 <label
                   htmlFor="name"
@@ -254,7 +256,10 @@ export default function ContactUsPage() {
             Frequently Asked Questions
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Do you offer international shipping?
               </h3>
@@ -263,7 +268,10 @@ export default function ContactUsPage() {
                 by location. Contact us for specific details.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 What is your return policy?
               </h3>
@@ -272,7 +280,10 @@ export default function ContactUsPage() {
                 condition. All sales are subject to authenticity verification.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Are all watches authentic?
               </h3>
@@ -281,7 +292,10 @@ export default function ContactUsPage() {
                 comes with certificates of authenticity.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <div
+              className=" p-6 rounded-lg shadow-md border border-gray-200"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
                 Do you buy used luxury watches?
               </h3>

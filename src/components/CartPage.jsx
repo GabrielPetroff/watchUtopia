@@ -135,7 +135,7 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className=" rounded-lg shadow-md overflow-hidden" style={{backgroundColor: '#F0F8FF'}}>
             {cartItems.map((item) => (
               <div
                 key={item.id}
@@ -203,7 +203,7 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+          <div className=" rounded-lg shadow-md p-6 sticky top-4" style={{backgroundColor: '#F0F8FF'}}>
             <h2 className="text-xl font-bold text-gray-900 mb-4">
               Order Summary
             </h2>

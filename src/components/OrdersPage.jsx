@@ -121,18 +121,20 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">My Orders</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
+        My Orders
+      </h1>
 
       {/* Success Message */}
       {showSuccess && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-          <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2 sm:gap-3">
+          <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-green-900">
+            <p className="text-sm sm:text-base font-semibold text-green-900">
               Order placed successfully!
             </p>
-            <p className="text-sm text-green-700">
+            <p className="text-xs sm:text-sm text-green-700">
               Your order has been received and is being processed.
             </p>
           </div>
@@ -141,49 +143,61 @@ export default function OrdersPage() {
 
       {/* Order Statistics */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div
+            className=" p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm border border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xs sm:text-sm text-gray-600">Total Orders</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {stats.totalOrders}
                 </p>
               </div>
-              <Package className="w-10 h-10 text-indigo-500" />
+              <Package className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-500" />
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+          <div
+            className=" p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm border border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">
+                <p className="text-xs sm:text-sm text-gray-600">Pending</p>
+                <p className="text-xl sm:text-2xl font-bold text-yellow-600">
                   {stats.pendingOrders}
                 </p>
               </div>
-              <Clock className="w-10 h-10 text-yellow-500" />
+              <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-500" />
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+          <div
+            className=" p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm border border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm text-gray-600">Delivered</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xs sm:text-sm text-gray-600">Delivered</p>
+                <p className="text-xl sm:text-2xl font-bold text-green-600">
                   {stats.deliveredOrders}
                 </p>
               </div>
-              <CheckCircle className="w-10 h-10 text-green-500" />
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+          <div
+            className=" p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm border border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm text-gray-600">Total Spent</p>
-                <p className="text-2xl font-bold text-indigo-600">
+                <p className="text-xs sm:text-sm text-gray-600">Total Spent</p>
+                <p className="text-xl sm:text-2xl font-bold text-indigo-600">
                   {formatCurrency(stats.totalSpent)}
                 </p>
               </div>
-              <Package className="w-10 h-10 text-indigo-500" />
+              <Package className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-500" />
             </div>
           </div>
         </div>
@@ -191,7 +205,10 @@ export default function OrdersPage() {
 
       {/* Orders List */}
       {orders.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+        <div
+          className="text-center py-12  rounded-lg shadow-sm"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <Package className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <h2 className="text-xl font-semibold text-gray-700 mb-2">
             No orders yet
@@ -211,17 +228,18 @@ export default function OrdersPage() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+              className=" rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+              style={{ backgroundColor: '#F0F8FF' }}
             >
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                         Order #{order.order_number}
                       </h3>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
                           order.status
                         )}`}
                       >
@@ -229,15 +247,15 @@ export default function OrdersPage() {
                           order.status.slice(1)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600">
                       Placed on {formatDate(order.order_date)}
                     </p>
                   </div>
-                  <div className="mt-4 sm:mt-0 text-left sm:text-right">
-                    <p className="text-2xl font-bold text-gray-900">
+                  <div className="mt-3 sm:mt-0 text-left sm:text-right">
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">
                       {formatCurrency(order.total_amount)}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600">
                       {order.items?.length || 0} item(s)
                     </p>
                   </div>

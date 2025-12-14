@@ -2,8 +2,14 @@ import { Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ backgroundColor: '#F0F8FF' }}
+    >
+      <div
+        className="max-w-2xl w-full rounded-2xl shadow-2xl p-8 md:p-12 text-center"
+        style={{ backgroundColor: '#F0F8FF' }}
+      >
         {/* Animated 404 */}
         <div className="relative mb-8">
           <h1 className="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600 animate-pulse">
@@ -34,7 +40,8 @@ export default function NotFound() {
           </button>
           <button
             onClick={() => (window.location.href = '/')}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg border-2 border-indigo-600 hover:bg-indigo-50 transform hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3  text-indigo-600 font-semibold rounded-lg border-2 border-indigo-600 hover:bg-indigo-50 transform hover:-translate-y-0.5 transition-all duration-200"
+            style={{ backgroundColor: '#F0F8FF' }}
           >
             <Home size={20} />
             Home Page

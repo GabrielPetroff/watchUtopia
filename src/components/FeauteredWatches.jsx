@@ -8,6 +8,11 @@ function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);
   const [bestSellers, setBestSellers] = useState([]);
   const [latestReleases, setLatestReleases] = useState([]);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: '',
+  });
 
   // Fetch best sellers - most expensive watches from feauteredwatches table
   const fetchBestSellers = useCallback(async () => {
@@ -41,40 +46,57 @@ function FeaturedWatches() {
     fetchLatestReleases();
   }, [fetchBestSellers, fetchLatestReleases]);
 
-  // Reusable add to cart function
-  const handleAddToCart = useCallback(async (item) => {
-    try {
-      const user = await authService.getCurrentUser();
-
-      if (!user) {
-        alert('Please login to add items to cart');
-        return;
-      }
-
-      const result = await cartService.addToCart(user.id, {
-        id: item.id,
-        model: item.model,
-        brand: item.brand,
-        price: item.price,
-        image: item.image, // store the path, not the full URL
-      });
-
-      if (result.success) {
-        alert('Added to cart!');
-      } else {
-        alert('Failed to add to cart');
-      }
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
-      alert('Failed to add to cart');
-    }
+  // Show notification
+  const showNotification = useCallback((message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
   }, []);
+
+  // Reusable add to cart function
+  const handleAddToCart = useCallback(
+    async (item) => {
+      try {
+        const user = await authService.getCurrentUser();
+
+        if (!user) {
+          showNotification('Please login to add items to cart', 'error');
+          return;
+        }
+
+        const result = await cartService.addToCart(user.id, {
+          id: item.id,
+          model: item.model,
+          brand: item.brand,
+          price: item.price,
+          image: item.image, // store the path, not the full URL
+        });
+
+        if (result.success) {
+          showNotification(
+            `${item.brand} ${item.model} added to cart!`,
+            'success'
+          );
+        } else {
+          showNotification('Failed to add to cart', 'error');
+        }
+      } catch (error) {
+        console.error('Error adding item to cart:', error);
+        showNotification('Failed to add to cart', 'error');
+      }
+    },
+    [showNotification]
+  );
 
   // Reusable watch item component
   const WatchItem = ({ item }) => (
     <li className="flex flex-col h-full text-sm tracking-widest group">
       <Link to={`/watch/${item.id}`} className="flex flex-col flex-grow">
-        <div className="overflow-hidden rounded-lg 2xl:rounded-xl bg-gray-50 aspect-square">
+        <div
+          className="overflow-hidden rounded-lg 2xl:rounded-xl  aspect-square"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <img
             src={item.imageUrl}
             alt={`${item.brand} ${item.model}`}
@@ -103,6 +125,17 @@ function FeaturedWatches() {
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-6 lg:px-8 2xl:px-12 pt-5 mb-6 space-y-4 md:space-y-6 2xl:space-y-8">
+      {/* Toast Notification */}
+      {notification.show && (
+        <div
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-3 md:px-6 md:py-4 rounded-lg shadow-lg text-white text-sm md:text-base font-medium transition-all duration-300 max-w-[90%] md:max-w-md text-center ${
+            notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
+
       <h2 className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold">
         Featured Watches
       </h2>

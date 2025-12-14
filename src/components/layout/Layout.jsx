@@ -9,6 +9,8 @@ import {
   User,
   UserCheck,
   ShoppingCart,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export default function Layout() {
@@ -17,6 +19,8 @@ export default function Layout() {
   const [activeSection, setActiveSection] = useState(null);
   const [brands, setBrands] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const toggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
   };
@@ -146,14 +150,18 @@ export default function Layout() {
 
   return (
     <div>
-      <header className="sticky top-0 bg-white shadow-md w-full z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link to="/">
-            <img src="/WULogo.png" alt="site-logo" className="h-10" />
+      <header
+        className="sticky top-0 shadow-md w-full z-50"
+        style={{ backgroundColor: '#F0F8FF' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+            <img src="/WULogo.png" alt="site-logo" className="h-8 sm:h-10" />
           </Link>
 
-          <nav>
-            <ul className="flex space-x-8 items-center">
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:block">
+            <ul className="flex space-x-6 xl:space-x-8 items-center">
               <li className="relative group">
                 <Link
                   to="/"
@@ -261,16 +269,146 @@ export default function Layout() {
                 <li className="relative group">
                   <Link
                     to="/cart"
-                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300"
+                    className="relative text-[#161818] hover:text-indigo-600 font-medium transition-colors duration-300 flex items-center gap-1"
                   >
-                    Cart ({cartItemCount})
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                    <ShoppingCart className="w-5 h-5" />
+                    <span className="bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
                   </Link>
                 </li>
               )}
             </ul>
           </nav>
+
+          {/* Mobile Menu Button & Cart */}
+          <div className="flex items-center gap-3 lg:hidden">
+            {user && (
+              <Link to="/cart" className="relative">
+                <ShoppingCart className="w-6 h-6 text-[#161818]" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-[#161818] hover:text-indigo-600 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div
+            className="lg:hidden border-t border-gray-200"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    to="/"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                  >
+                    Products
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+                {user && (
+                  <li>
+                    <Link
+                      to="/wishlist"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                    >
+                      Wishlist
+                    </Link>
+                  </li>
+                )}
+                <li>
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-[#161818] hover:text-indigo-600 font-medium transition-colors"
+                  >
+                    Profile
+                  </Link>
+                </li>
+                {!user ? (
+                  <>
+                    <li className="pt-2 border-t border-gray-200">
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
+                      >
+                        Login
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/register"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
+                      >
+                        Register
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <li className="pt-2 border-t border-gray-200">
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="block w-full text-left py-2 text-red-600 hover:text-red-700 font-semibold transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </nav>
+          </div>
+        )}
       </header>
 
       <Outlet />

@@ -161,7 +161,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen py-12" style={{ backgroundColor: '#F0F8FF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -217,8 +217,8 @@ export default function ProductsPage() {
                 onClick={() => setSelectedBrand('all')}
                 className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                   selectedBrand === 'all'
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                    ? 'bg-[#161818] text-white shadow-lg'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:border-[#0D0E0E] hover:text-[#0D0E0E]'
                 }`}
               >
                 All Brands
@@ -231,8 +231,8 @@ export default function ProductsPage() {
                   onClick={() => setSelectedBrand(brand)}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedBrand === brand
-                      ? 'bg-indigo-600 text-white shadow-lg'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                      ? 'bg-[#161818] text-white shadow-lg'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:border-[#0D0E0E] hover:text-[#0D0E0E]'
                   }`}
                 >
                   {brand}
@@ -310,8 +310,8 @@ export default function ProductsPage() {
                   onClick={() => setSelectedTag('all')}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedTag === 'all'
-                      ? 'bg-indigo-600 text-white shadow-lg'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                      ? 'bg-[#161818] text-white shadow-lg'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:border-[#0D0E0E] hover:text-[#0D0E0E]'
                   }`}
                 >
                   All Collections
@@ -324,8 +324,8 @@ export default function ProductsPage() {
                     onClick={() => setSelectedTag(tag)}
                     className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                       selectedTag === tag
-                        ? 'bg-indigo-600 text-white shadow-lg'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-600 hover:text-indigo-600'
+                        ? 'bg-[#161818] text-white shadow-lg'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:border-[#0D0E0E] hover:text-[#0D0E0E]'
                     }`}
                   >
                     {tag}
@@ -376,7 +376,8 @@ export default function ProductsPage() {
               id="sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent bg-white"
+              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent "
+              style={{ backgroundColor: '#F0F8FF' }}
             >
               <option value="newest">Newest First</option>
               <option value="best-sellers">Best Sellers</option>
@@ -399,10 +400,14 @@ export default function ProductsPage() {
               <Link
                 key={watch.id}
                 to={`/watch/${watch.id}`}
-                className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className="group  rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                style={{ backgroundColor: '#F0F8FF' }}
               >
                 {/* Image */}
-                <div className="aspect-square overflow-hidden bg-gray-100">
+                <div
+                  className="aspect-square overflow-hidden "
+                  style={{ backgroundColor: '#F0F8FF' }}
+                >
                   <img
                     src={watch.imageUrl}
                     alt={`${watch.brand} ${watch.model}`}

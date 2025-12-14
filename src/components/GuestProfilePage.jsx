@@ -3,9 +3,15 @@ import { UserX, LogIn, UserPlus } from 'lucide-react';
 
 export default function GuestProfilePage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+      style={{ backgroundColor: '#F0F8FF' }}
+    >
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+        <div
+          className="rounded-lg shadow-md p-8 text-center"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-100 mb-6">
             <UserX className="h-10 w-10 text-indigo-600" />
           </div>
@@ -30,7 +36,8 @@ export default function GuestProfilePage() {
 
             <Link
               to="/register"
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-indigo-600 text-base font-medium rounded-lg text-indigo-600 bg-white hover:bg-indigo-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-indigo-600 text-base font-medium rounded-lg text-indigo-600  hover:bg-indigo-50 transition-colors"
+              style={{ backgroundColor: '#F0F8FF' }}
             >
               <UserPlus className="w-5 h-5" />
               Create Account
@@ -51,7 +58,10 @@ export default function GuestProfilePage() {
         </div>
 
         {/* Benefits Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        <div
+          className="mt-8  rounded-lg shadow-md p-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Why create an account?
           </h3>

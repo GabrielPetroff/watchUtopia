@@ -229,7 +229,7 @@ function WatchDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 2xl:gap-16">
           {/* Image Section */}
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg 2xl:rounded-xl overflow-hidden">
+            <div className=" rounded-lg 2xl:rounded-xl overflow-hidden" style={{backgroundColor: '#F0F8FF'}}>
               <img
                 src={watch.imageUrl}
                 alt={`${watch.brand} ${watch.model}`}

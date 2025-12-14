@@ -116,10 +116,13 @@ export default function UserProfilePage({ user }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: '#F0F8FF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div
+          className="rounded-lg shadow-md p-6 mb-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
           <p className="text-gray-600">{user.email}</p>
         </div>
@@ -127,7 +130,10 @@ export default function UserProfilePage({ user }) {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Orders</p>
@@ -139,7 +145,10 @@ export default function UserProfilePage({ user }) {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Delivered</p>
@@ -151,7 +160,10 @@ export default function UserProfilePage({ user }) {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">In Progress</p>
@@ -165,7 +177,10 @@ export default function UserProfilePage({ user }) {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Spent</p>
@@ -180,7 +195,10 @@ export default function UserProfilePage({ user }) {
         )}
 
         {/* Orders Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div
+          className=" rounded-lg shadow-md p-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">My Orders</h2>
             <button
@@ -352,7 +370,8 @@ export default function UserProfilePage({ user }) {
                           {order.items.map((item, idx) => (
                             <div
                               key={idx}
-                              className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg"
+                              className="flex items-center gap-4  p-3 rounded-lg"
+                              style={{ backgroundColor: '#F0F8FF' }}
                             >
                               {item.imageUrl && (
                                 <img

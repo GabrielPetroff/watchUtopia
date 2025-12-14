@@ -214,7 +214,10 @@ export default function ProductEditPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div
+        className="min-h-screen  flex items-center justify-center"
+        style={{ backgroundColor: '#F0F8FF' }}
+      >
         <div className="text-xl">Loading product...</div>
       </div>
     );
@@ -222,7 +225,10 @@ export default function ProductEditPage() {
 
   if (error && !product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+      <div
+        className="min-h-screen  flex flex-col items-center justify-center"
+        style={{ backgroundColor: '#F0F8FF' }}
+      >
         <div className="text-xl text-red-600 mb-4">{error}</div>
         <button
           onClick={() => navigate('/profile')}
@@ -235,9 +241,12 @@ export default function ProductEditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: '#F0F8FF' }}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div
+          className="rounded-lg shadow-md p-6 mb-6"
+          style={{ backgroundColor: '#F0F8FF' }}
+        >
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
@@ -381,7 +390,10 @@ export default function ProductEditPage() {
 
                 {/* File Upload Option */}
                 <div className="mb-3">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <label
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer"
+                    style={{ backgroundColor: '#F0F8FF' }}
+                  >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Plus className="w-8 h-8 mb-2 text-gray-500" />
                       <p className="mb-2 text-sm text-gray-500">

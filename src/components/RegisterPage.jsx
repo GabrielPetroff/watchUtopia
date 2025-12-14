@@ -106,8 +106,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ backgroundColor: '#F0F8FF' }}
+    >
+      <div
+        className="rounded-2xl shadow-xl w-full max-w-md p-8"
+        style={{ backgroundColor: '#F0F8FF' }}
+      >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
           <p className="text-gray-600 mt-2">Sign up to get started</p>

@@ -181,32 +181,37 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Back to Cart Link */}
       <Link
         to="/cart"
-        className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 font-medium"
+        className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-4 sm:mb-6 font-medium text-sm sm:text-base"
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         Back to Cart
       </Link>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
+        Checkout
+      </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Shipping Information */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <MapPin className="w-6 h-6 text-indigo-600" />
-                <h2 className="text-xl font-bold text-gray-900">
+            <div
+              className=" rounded-lg shadow-md p-4 sm:p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Shipping Information
                 </h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label
                     htmlFor="address"
@@ -337,7 +342,10 @@ export default function CheckoutPage() {
             </div>
 
             {/* Shipping Method */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <Package className="w-6 h-6 text-indigo-600" />
                 <h2 className="text-xl font-bold text-gray-900">
@@ -346,11 +354,13 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-3">
-                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                  shippingType === 'standard'
-                    ? 'border-indigo-600 bg-indigo-50'
-                    : 'border-gray-300 hover:border-indigo-300'
-                }`}>
+                <label
+                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    shippingType === 'standard'
+                      ? 'border-indigo-600 bg-indigo-50'
+                      : 'border-gray-300 hover:border-indigo-300'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="shippingType"
@@ -374,11 +384,13 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                  shippingType === 'express'
-                    ? 'border-indigo-600 bg-indigo-50'
-                    : 'border-gray-300 hover:border-indigo-300'
-                }`}>
+                <label
+                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    shippingType === 'express'
+                      ? 'border-indigo-600 bg-indigo-50'
+                      : 'border-gray-300 hover:border-indigo-300'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="shippingType"
@@ -403,7 +415,10 @@ export default function CheckoutPage() {
             </div>
 
             {/* Payment Method */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div
+              className=" rounded-lg shadow-md p-6"
+              style={{ backgroundColor: '#F0F8FF' }}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <CreditCard className="w-6 h-6 text-indigo-600" />
                 <h2 className="text-xl font-bold text-gray-900">
@@ -437,7 +452,10 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+          <div
+            className=" rounded-lg shadow-md p-6 sticky top-4"
+            style={{ backgroundColor: '#F0F8FF' }}
+          >
             <div className="flex items-center gap-2 mb-4">
               <ShoppingBag className="w-6 h-6 text-indigo-600" />
               <h2 className="text-xl font-bold text-gray-900">Order Summary</h2>
@@ -478,9 +496,20 @@ export default function CheckoutPage() {
                 <span>{formatCurrency(calculateTax())}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Shipping ({shippingType === 'express' ? 'Express' : 'Standard'})</span>
-                <span className={calculateShipping() === 0 ? 'text-green-600 font-medium' : ''}>
-                  {calculateShipping() === 0 ? 'FREE' : formatCurrency(calculateShipping())}
+                <span>
+                  Shipping (
+                  {shippingType === 'express' ? 'Express' : 'Standard'})
+                </span>
+                <span
+                  className={
+                    calculateShipping() === 0
+                      ? 'text-green-600 font-medium'
+                      : ''
+                  }
+                >
+                  {calculateShipping() === 0
+                    ? 'FREE'
+                    : formatCurrency(calculateShipping())}
                 </span>
               </div>
               <div className="border-t pt-3">
