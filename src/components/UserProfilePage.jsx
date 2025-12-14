@@ -336,16 +336,32 @@ export default function UserProfilePage({ user }) {
                     )}
 
                   {/* Additional Info */}
-                  {order.tracking_number && (
-                    <div className="border-t border-gray-200 pt-4 mt-4">
-                      <p className="text-sm text-gray-600">
-                        Tracking Number:{' '}
-                        <span className="font-medium text-gray-900">
-                          {order.tracking_number}
-                        </span>
-                      </p>
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {order.payment_method && (
+                        <div>
+                          <p className="text-sm text-gray-600">
+                            Payment Method:{' '}
+                            <span className="font-medium text-gray-900">
+                              {order.payment_method === 'cash_on_delivery'
+                                ? 'Cash on Delivery'
+                                : order.payment_method}
+                            </span>
+                          </p>
+                        </div>
+                      )}
+                      {order.tracking_number && (
+                        <div>
+                          <p className="text-sm text-gray-600">
+                            Tracking Number:{' '}
+                            <span className="font-medium text-gray-900">
+                              {order.tracking_number}
+                            </span>
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

@@ -355,11 +355,9 @@ export default function OrdersPage() {
                         <div className="text-sm text-gray-600 space-y-1">
                           <p>
                             <span className="font-medium">Payment Method:</span>{' '}
-                            {order.payment_method || 'N/A'}
-                          </p>
-                          <p>
-                            <span className="font-medium">Payment Status:</span>{' '}
-                            {order.payment_status}
+                            {order.payment_method === 'cash_on_delivery'
+                              ? 'Cash on Delivery'
+                              : order.payment_method || 'N/A'}
                           </p>
                           {order.shipped_at && (
                             <p>

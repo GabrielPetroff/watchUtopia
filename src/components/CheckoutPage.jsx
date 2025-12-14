@@ -26,6 +26,8 @@ export default function CheckoutPage() {
     phone: '',
   });
 
+  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
+
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -105,6 +107,8 @@ export default function CheckoutPage() {
       const orderResult = await orderService.createOrder({
         userId: user.id,
         items: orderItems,
+        shippingInfo: shippingInfo,
+        paymentMethod: paymentMethod,
       });
 
       if (orderResult.success) {
@@ -317,6 +321,37 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <CreditCard className="w-6 h-6 text-indigo-600" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  Payment Method
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                <label className="flex items-center p-4 border-2 border-indigo-600 bg-indigo-50 rounded-lg cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cash_on_delivery"
+                    checked={paymentMethod === 'cash_on_delivery'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <div className="ml-3 flex-1">
+                    <p className="font-medium text-gray-900">
+                      Cash on Delivery
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Pay when you receive your order
+                    </p>
+                  </div>
+                </label>
               </div>
             </div>
           </form>

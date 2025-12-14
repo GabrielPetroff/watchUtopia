@@ -324,9 +324,7 @@ export default function SuperAdminProfilePage({ user }) {
     }
   };
 
-  const handleOrderStatusToggle = async (order) => {
-    const newStatus = order.status === 'delivered' ? 'processing' : 'delivered';
-
+  const handleOrderStatusChange = async (order, newStatus) => {
     setError('');
     setSuccess('');
 
@@ -389,15 +387,6 @@ export default function SuperAdminProfilePage({ user }) {
             Super Admin Dashboard
           </h1>
           <p className="text-gray-600">Welcome, {user.email}</p>
-          <div className="mt-2 text-sm">
-            <span className="font-semibold">Role: </span>
-            <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded">
-              {user?.raw_app_meta_data?.role ||
-                user?.app_metadata?.role ||
-                user?.user_metadata?.role ||
-                'super-admin'}
-            </span>
-          </div>
         </div>
 
         {/* Tabs */}
@@ -876,18 +865,47 @@ export default function SuperAdminProfilePage({ user }) {
                           {order.status.charAt(0).toUpperCase() +
                             order.status.slice(1)}
                         </span>
-                        <button
-                          onClick={() => handleOrderStatusToggle(order)}
-                          className={`px-4 py-2 rounded-lg transition-colors ${
-                            order.status === 'delivered'
-                              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                              : 'bg-green-600 text-white hover:bg-green-700'
-                          }`}
-                        >
-                          {order.status === 'delivered'
-                            ? 'Mark as Processing'
-                            : 'Mark as Delivered'}
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() =>
+                              handleOrderStatusChange(order, 'processing')
+                            }
+                            disabled={order.status === 'processing'}
+                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                              order.status === 'processing'
+                                ? 'bg-blue-100 text-blue-400 cursor-not-allowed'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}
+                          >
+                            Processing
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleOrderStatusChange(order, 'shipped')
+                            }
+                            disabled={order.status === 'shipped'}
+                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                              order.status === 'shipped'
+                                ? 'bg-purple-100 text-purple-400 cursor-not-allowed'
+                                : 'bg-purple-600 text-white hover:bg-purple-700'
+                            }`}
+                          >
+                            Shipped
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleOrderStatusChange(order, 'delivered')
+                            }
+                            disabled={order.status === 'delivered'}
+                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                              order.status === 'delivered'
+                                ? 'bg-green-100 text-green-400 cursor-not-allowed'
+                                : 'bg-green-600 text-white hover:bg-green-700'
+                            }`}
+                          >
+                            Delivered
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -915,6 +933,71 @@ export default function SuperAdminProfilePage({ user }) {
                           </p>
                         </div>
                       </div>
+
+                      {/* Shipping Information */}
+                      {(order.shipping_address ||
+                        order.shipping_city ||
+                        order.shipping_country) && (
+                        <div className="mt-4 bg-blue-50 p-4 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Shipping Information:
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                            {order.shipping_address && (
+                              <div>
+                                <span className="text-gray-600">Address:</span>
+                                <p className="font-medium text-gray-900">
+                                  {order.shipping_address}
+                                </p>
+                              </div>
+                            )}
+                            {order.shipping_city && (
+                              <div>
+                                <span className="text-gray-600">City:</span>
+                                <p className="font-medium text-gray-900">
+                                  {order.shipping_city}
+                                </p>
+                              </div>
+                            )}
+                            {order.shipping_postal_code && (
+                              <div>
+                                <span className="text-gray-600">
+                                  Postal Code:
+                                </span>
+                                <p className="font-medium text-gray-900">
+                                  {order.shipping_postal_code}
+                                </p>
+                              </div>
+                            )}
+                            {order.shipping_country && (
+                              <div>
+                                <span className="text-gray-600">Country:</span>
+                                <p className="font-medium text-gray-900">
+                                  {order.shipping_country}
+                                </p>
+                              </div>
+                            )}
+                            {order.shipping_phone && (
+                              <div>
+                                <span className="text-gray-600">Phone:</span>
+                                <p className="font-medium text-gray-900">
+                                  {order.shipping_phone}
+                                </p>
+                              </div>
+                            )}
+                            {order.payment_method && (
+                              <div>
+                                <span className="text-gray-600">Payment:</span>
+                                <p className="font-medium text-gray-900">
+                                  {order.payment_method === 'cash_on_delivery'
+                                    ? 'Cash on Delivery'
+                                    : order.payment_method}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       {order.items &&
                         Array.isArray(order.items) &&

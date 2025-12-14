@@ -69,7 +69,7 @@ const orderService = {
    */
   async createOrder(orderData) {
     try {
-      const { userId, items } = orderData;
+      const { userId, items, shippingInfo, paymentMethod } = orderData;
 
       // Calculate total amount
       const totalAmount = items.reduce(
@@ -89,16 +89,30 @@ const orderService = {
       }));
 
       // Insert the order with items as JSON
+      const orderInsert = {
+        user_id: userId,
+        total_amount: totalAmount,
+        status: 'pending',
+        items: itemsJson,
+      };
+
+      // Add shipping information if provided
+      if (shippingInfo) {
+        orderInsert.shipping_address = shippingInfo.address;
+        orderInsert.shipping_city = shippingInfo.city;
+        orderInsert.shipping_postal_code = shippingInfo.postalCode;
+        orderInsert.shipping_country = shippingInfo.country;
+        orderInsert.shipping_phone = shippingInfo.phone;
+      }
+
+      // Add payment method if provided
+      if (paymentMethod) {
+        orderInsert.payment_method = paymentMethod;
+      }
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
-        .insert([
-          {
-            user_id: userId,
-            total_amount: totalAmount,
-            status: 'pending',
-            items: itemsJson,
-          },
-        ])
+        .insert([orderInsert])
         .select()
         .single();
 
