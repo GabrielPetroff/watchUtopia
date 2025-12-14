@@ -137,11 +137,18 @@ function FeaturedWatches() {
         </ul>
 
         <div className="flex justify-center">
-          <button className="border-2 border-[#161818] hover:bg-[#161818] hover:text-white px-6 py-3 md:py-4 2xl:py-5 uppercase text-sm md:text-base 2xl:text-lg font-medium w-full max-w-2xl transition-colors duration-200">
+          <Link
+            to={
+              activeContentIndex === 0
+                ? '/products?sort=best-sellers'
+                : '/products?sort=newest'
+            }
+            className="border-2 border-[#161818] hover:bg-[#161818] hover:text-white px-6 py-3 md:py-4 2xl:py-5 uppercase text-sm md:text-base 2xl:text-lg font-medium w-full max-w-2xl transition-colors duration-200 text-center"
+          >
             {activeContentIndex === 0
               ? 'Shop all Best Sellers'
               : 'Shop all Latest Releases'}
-          </button>
+          </Link>
         </div>
       </div>
     </div>

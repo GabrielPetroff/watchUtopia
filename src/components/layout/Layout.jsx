@@ -433,31 +433,10 @@ export default function Layout() {
                   </div>
                 </div>
               </li>
-
-              {/* Payment Methods */}
-              <li className="w-full pt-6">
-                <h3 className="uppercase font-semibold mb-3 text-sm">
-                  We Accept
-                </h3>
-                <div className="flex items-center gap-3 flex-wrap pb-6 border-b border-gray-700">
-                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                    VISA
-                  </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                    Mastercard
-                  </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                    Apple Pay
-                  </div>
-                  <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                    Google Pay
-                  </div>
-                </div>
-              </li>
             </ul>
 
             {/* Copyright Mobile */}
-            <div className="pt-6 text-center">
+            <div className="pt-6 border-t border-gray-700 text-center">
               <p className="text-xs text-gray-400">
                 © {new Date().getFullYear()} Watch Utopia. All rights reserved.
               </p>
@@ -623,9 +602,9 @@ export default function Layout() {
 
             {/* Bottom Section */}
             <div className="pt-8 border-t border-gray-700">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                 {/* Copyright */}
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-400 text-center">
                   <p>
                     © {new Date().getFullYear()} Watch Utopia. All rights
                     reserved.
@@ -633,27 +612,6 @@ export default function Layout() {
                   <p className="text-xs text-gray-500 mt-1">
                     Your premier destination for luxury timepieces
                   </p>
-                </div>
-
-                {/* Payment Methods */}
-                <div>
-                  <p className="text-xs text-gray-400 mb-2 text-center">
-                    We Accept
-                  </p>
-                  <div className="flex gap-2">
-                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                      VISA
-                    </div>
-                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                      Mastercard
-                    </div>
-                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                      Apple Pay
-                    </div>
-                    <div className="text-xs bg-gray-700 px-3 py-1.5 rounded">
-                      Google Pay
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

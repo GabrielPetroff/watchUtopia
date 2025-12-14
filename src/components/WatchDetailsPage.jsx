@@ -270,6 +270,22 @@ function WatchDetailsPage() {
                   </span>
                   <p className="font-medium mt-1">{watch.model}</p>
                 </div>
+                {watch.year && (
+                  <div>
+                    <span className="text-gray-600 uppercase tracking-wider text-xs">
+                      Year
+                    </span>
+                    <p className="font-medium mt-1">{watch.year}</p>
+                  </div>
+                )}
+                {watch.condition && (
+                  <div>
+                    <span className="text-gray-600 uppercase tracking-wider text-xs">
+                      Condition
+                    </span>
+                    <p className="font-medium mt-1">{watch.condition}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -279,7 +295,7 @@ function WatchDetailsPage() {
                 <h3 className="text-lg md:text-xl font-semibold">
                   Description
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                   {watch.description}
                 </p>
               </div>

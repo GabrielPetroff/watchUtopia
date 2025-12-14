@@ -35,6 +35,8 @@ export default function SuperAdminProfilePage({ user }) {
     image: '',
     tag: '',
     description: '',
+    year: '',
+    condition: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -185,6 +187,8 @@ export default function SuperAdminProfilePage({ user }) {
       image: '',
       tag: '',
       description: '',
+      year: '',
+      condition: '',
     });
     setImageFile(null);
     setImagePreview('');
@@ -219,6 +223,8 @@ export default function SuperAdminProfilePage({ user }) {
         image: imageUrl,
         tag: productForm.tag?.trim() || null,
         description: productForm.description?.trim() || null,
+        year: productForm.year ? parseInt(productForm.year) : null,
+        condition: productForm.condition?.trim() || null,
       });
 
       if (!result.success) throw new Error(result.error);
@@ -269,6 +275,8 @@ export default function SuperAdminProfilePage({ user }) {
         image: imageUrl,
         tag: productForm.tag?.trim() || null,
         description: productForm.description?.trim() || null,
+        year: productForm.year ? parseInt(productForm.year) : null,
+        condition: productForm.condition?.trim() || null,
       };
 
       const result = await dataService.updateProduct(
@@ -626,6 +634,36 @@ export default function SuperAdminProfilePage({ user }) {
                       name="tag"
                       value={productForm.tag}
                       onChange={handleProductFormChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Year
+                    </label>
+                    <input
+                      type="number"
+                      name="year"
+                      value={productForm.year}
+                      onChange={handleProductFormChange}
+                      placeholder="e.g., 2025"
+                      min="1900"
+                      max="2100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Condition
+                    </label>
+                    <input
+                      type="text"
+                      name="condition"
+                      value={productForm.condition}
+                      onChange={handleProductFormChange}
+                      placeholder="e.g., NEW, UNWORN, USED"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
@@ -992,6 +1030,26 @@ export default function SuperAdminProfilePage({ user }) {
                                   {order.payment_method === 'cash_on_delivery'
                                     ? 'Cash on Delivery'
                                     : order.payment_method}
+                                </p>
+                              </div>
+                            )}
+                            {order.shipping_type && (
+                              <div>
+                                <span className="text-gray-600">
+                                  Shipping Type:
+                                </span>
+                                <p className="font-medium text-gray-900">
+                                  <span
+                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                      order.shipping_type === 'express'
+                                        ? 'bg-purple-100 text-purple-800'
+                                        : 'bg-blue-100 text-blue-800'
+                                    }`}
+                                  >
+                                    {order.shipping_type === 'express'
+                                      ? 'Express Shipping'
+                                      : 'Standard Shipping'}
+                                  </span>
                                 </p>
                               </div>
                             )}

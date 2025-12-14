@@ -19,6 +19,8 @@ export default function ProductEditPage() {
     image: '',
     tag: '',
     description: '',
+    year: '',
+    condition: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -62,6 +64,8 @@ export default function ProductEditPage() {
           image: data.image,
           tag: data.tag || '',
           description: data.description || '',
+          year: data.year ? data.year.toString() : '',
+          condition: data.condition || '',
         });
         setImagePreview(data.image);
       } catch (err) {
@@ -180,6 +184,8 @@ export default function ProductEditPage() {
         image: imageUrl,
         tag: productForm.tag?.trim() || null,
         description: productForm.description?.trim() || null,
+        year: productForm.year ? parseInt(productForm.year) : null,
+        condition: productForm.condition?.trim() || null,
       };
 
       const result = await dataService.updateProduct(id, updateData);
@@ -309,6 +315,36 @@ export default function ProductEditPage() {
                   name="tag"
                   value={productForm.tag}
                   onChange={handleProductFormChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Year
+                </label>
+                <input
+                  type="number"
+                  name="year"
+                  value={productForm.year}
+                  onChange={handleProductFormChange}
+                  placeholder="e.g., 2025"
+                  min="1900"
+                  max="2100"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Condition
+                </label>
+                <input
+                  type="text"
+                  name="condition"
+                  value={productForm.condition}
+                  onChange={handleProductFormChange}
+                  placeholder="e.g., NEW, UNWORN, USED"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>

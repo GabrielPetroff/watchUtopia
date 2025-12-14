@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   Loader2,
   CreditCard,
+  Package,
 } from 'lucide-react';
 
 export default function CheckoutPage() {
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
   });
 
   const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
+  const [shippingType, setShippingType] = useState('standard');
 
   const [errors, setErrors] = useState({});
 
@@ -109,6 +111,7 @@ export default function CheckoutPage() {
         items: orderItems,
         shippingInfo: shippingInfo,
         paymentMethod: paymentMethod,
+        shippingType: shippingType,
       });
 
       if (orderResult.success) {
@@ -156,8 +159,17 @@ export default function CheckoutPage() {
     return calculateSubtotal() * 0.1; // 10% tax
   };
 
+  const calculateShipping = () => {
+    if (shippingType === 'express') {
+      return 50; // Express shipping is always $50
+    }
+    // Standard shipping: free if subtotal >= $500, otherwise $25
+    const subtotal = calculateSubtotal();
+    return subtotal >= 500 ? 0 : 25;
+  };
+
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateTax();
+    return calculateSubtotal() + calculateTax() + calculateShipping();
   };
 
   if (loading) {
@@ -324,6 +336,72 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* Shipping Method */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="w-6 h-6 text-indigo-600" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  Shipping Method
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  shippingType === 'standard'
+                    ? 'border-indigo-600 bg-indigo-50'
+                    : 'border-gray-300 hover:border-indigo-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="shippingType"
+                    value="standard"
+                    checked={shippingType === 'standard'}
+                    onChange={(e) => setShippingType(e.target.value)}
+                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <div className="ml-3 flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-gray-900">
+                        Standard Shipping
+                      </p>
+                      <p className="font-semibold text-indigo-600">
+                        {calculateSubtotal() >= 500 ? 'FREE' : '$25'}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      5-7 business days • Free on orders over $500
+                    </p>
+                  </div>
+                </label>
+
+                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  shippingType === 'express'
+                    ? 'border-indigo-600 bg-indigo-50'
+                    : 'border-gray-300 hover:border-indigo-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="shippingType"
+                    value="express"
+                    checked={shippingType === 'express'}
+                    onChange={(e) => setShippingType(e.target.value)}
+                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <div className="ml-3 flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-gray-900">
+                        Express Shipping
+                      </p>
+                      <p className="font-semibold text-indigo-600">$50</p>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      2-3 business days • Expedited delivery
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             {/* Payment Method */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -400,8 +478,10 @@ export default function CheckoutPage() {
                 <span>{formatCurrency(calculateTax())}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className="text-green-600 font-medium">FREE</span>
+                <span>Shipping ({shippingType === 'express' ? 'Express' : 'Standard'})</span>
+                <span className={calculateShipping() === 0 ? 'text-green-600 font-medium' : ''}>
+                  {calculateShipping() === 0 ? 'FREE' : formatCurrency(calculateShipping())}
+                </span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex justify-between text-lg font-bold text-gray-900">

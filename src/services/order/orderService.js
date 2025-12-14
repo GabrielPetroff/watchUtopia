@@ -69,7 +69,7 @@ const orderService = {
    */
   async createOrder(orderData) {
     try {
-      const { userId, items, shippingInfo, paymentMethod } = orderData;
+      const { userId, items, shippingInfo, paymentMethod, shippingType } = orderData;
 
       // Calculate total amount
       const totalAmount = items.reduce(
@@ -108,6 +108,11 @@ const orderService = {
       // Add payment method if provided
       if (paymentMethod) {
         orderInsert.payment_method = paymentMethod;
+      }
+
+      // Add shipping type if provided
+      if (shippingType) {
+        orderInsert.shipping_type = shippingType;
       }
 
       const { data: order, error: orderError } = await supabase

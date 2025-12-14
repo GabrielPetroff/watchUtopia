@@ -78,10 +78,13 @@ export default function ShippingDeliveryPage() {
                     <h3 className="text-xl font-semibold text-gray-900">
                       Standard Shipping
                     </h3>
-                    <span className="text-indigo-600 font-bold">FREE</span>
+                    <span className="text-indigo-600 font-bold">
+                      $25 / FREE over $500
+                    </span>
                   </div>
                   <p className="text-gray-600 mb-2">
-                    Free standard shipping on all orders over $500
+                    $25 for orders under $500 • Free standard shipping on all
+                    orders over $500
                   </p>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Clock className="w-4 h-4" />
@@ -115,35 +118,6 @@ export default function ShippingDeliveryPage() {
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <Clock className="w-4 h-4" />
                     <span>Delivery: 5-7 business days (International)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg shadow-md border-2 border-indigo-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-indigo-600 rounded-full p-2 flex-shrink-0">
-                  <Truck className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        Overnight Shipping
-                      </h3>
-                      <span className="text-sm text-indigo-600 font-medium">
-                        Premium Service
-                      </span>
-                    </div>
-                    <span className="text-indigo-600 font-bold">$100</span>
-                  </div>
-                  <p className="text-gray-600 mb-2">
-                    Next business day delivery with real-time tracking and
-                    white-glove service
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Clock className="w-4 h-4" />
-                    <span>Delivery: Next business day (Domestic only)</span>
                   </div>
                 </div>
               </div>

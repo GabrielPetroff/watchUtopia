@@ -26,6 +26,12 @@ export default function ProductsPage() {
     if (brandParam) {
       setSelectedBrand(brandParam);
     }
+
+    // Check if there's a sort parameter in the URL
+    const sortParam = searchParams.get('sort');
+    if (sortParam) {
+      setSortBy(sortParam);
+    }
   }, [searchParams]);
 
   const loadWatches = async () => {
@@ -76,8 +82,10 @@ export default function ProductsPage() {
           return a.price - b.price;
         case 'price-desc':
           return b.price - a.price;
+        case 'best-sellers':
+          return (b.times_bought || 0) - (a.times_bought || 0); // Best sellers sorted by times bought
         case 'newest':
-          return new Date(b.created_at) - new Date(a.created_at);
+          return b.id - a.id; // Newest sorted by ID descending
         default:
           return 0;
       }
@@ -371,6 +379,7 @@ export default function ProductsPage() {
               className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent bg-white"
             >
               <option value="newest">Newest First</option>
+              <option value="best-sellers">Best Sellers</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
             </select>

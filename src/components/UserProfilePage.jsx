@@ -15,6 +15,7 @@ export default function UserProfilePage({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [stats, setStats] = useState(null);
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -49,6 +50,34 @@ export default function UserProfilePage({ user }) {
       }
     } catch (err) {
       console.error('Failed to fetch stats:', err);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (
+      !confirm(
+        'Are you sure you want to delete this order? This action cannot be undone.'
+      )
+    ) {
+      return;
+    }
+
+    setDeletingOrderId(orderId);
+    setError('');
+
+    try {
+      const result = await orderService.deleteOrder(orderId);
+      if (result.success) {
+        // Refresh orders and stats after deletion
+        await fetchUserOrders();
+        await fetchUserStats();
+      } else {
+        setError(result.message || 'Failed to delete order');
+      }
+    } catch (err) {
+      setError('Failed to delete order: ' + err.message);
+    } finally {
+      setDeletingOrderId(null);
     }
   };
 
@@ -198,7 +227,7 @@ export default function UserProfilePage({ user }) {
                   className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                    <div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">
                           Order #{order.id.slice(0, 8)}
@@ -233,6 +262,25 @@ export default function UserProfilePage({ user }) {
                         {Array.isArray(order.items) ? order.items.length : 0}{' '}
                         item(s)
                       </p>
+                      {order.status === 'pending' && (
+                        <button
+                          onClick={() => handleDeleteOrder(order.id)}
+                          disabled={deletingOrderId === order.id}
+                          className="mt-3 px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ml-auto"
+                        >
+                          {deletingOrderId === order.id ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              Deleting...
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-4 h-4" />
+                              Delete Order
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
 
