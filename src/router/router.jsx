@@ -15,6 +15,7 @@ import CheckoutPage from '../components/CheckoutPage.jsx';
 import ProductEditPage from '../components/ProductEditPage.jsx';
 import ContactUsPage from '../components/ContactUsPage.jsx';
 import ShippingDeliveryPage from '../components/ShippingDeliveryPage.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
 
 const routes = createBrowserRouter([
   {
@@ -56,19 +57,35 @@ const routes = createBrowserRouter([
       },
       {
         path: '/wishlist',
-        element: <WishlistPage />,
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            <WishlistPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/cart',
-        element: <CartPage />,
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            <CartPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/checkout',
-        element: <CheckoutPage />,
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            <CheckoutPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/orders',
-        element: <OrdersPage />,
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            <OrdersPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/profile',
@@ -76,7 +93,11 @@ const routes = createBrowserRouter([
       },
       {
         path: '/product/:id/edit',
-        element: <ProductEditPage />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+            <ProductEditPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

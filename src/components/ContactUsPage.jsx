@@ -135,9 +135,13 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            {/* Map placeholder */}
-            <div className="mt-8 bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-              <p className="text-gray-500">Map would be displayed here</p>
+            {/* Map */}
+            <div className="mt-8 rounded-lg overflow-hidden shadow-lg">
+              <img
+                src="/WUMap.png"
+                alt="Watch Utopia Location Map"
+                className="w-full h-auto"
+              />
             </div>
           </div>
 

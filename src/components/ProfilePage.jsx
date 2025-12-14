@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import authService from '../services/auth/authServive.js';
+import { isSuperAdmin } from '../utils/authUtils.js';
 import SuperAdminProfilePage from './SuperAdminProfilePage.jsx';
 import UserProfilePage from './UserProfilePage.jsx';
 import GuestProfilePage from './GuestProfilePage.jsx';
@@ -48,14 +49,11 @@ export default function ProfilePage() {
     return <GuestProfilePage />;
   }
 
-  // Check if user is super-admin - try multiple possible locations
-  const isSuperAdmin =
-    user.raw_app_meta_data?.role === 'super-admin' ||
-    user.app_metadata?.role === 'super-admin' ||
-    user.user_metadata?.role === 'super-admin';
+  // Check if user is super-admin using centralized utility
+  const isAdmin = isSuperAdmin(user);
 
   // Render appropriate profile page based on role
-  return isSuperAdmin ? (
+  return isAdmin ? (
     <SuperAdminProfilePage user={user} />
   ) : (
     <UserProfilePage user={user} />

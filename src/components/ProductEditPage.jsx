@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import authService from '../services/auth/authServive.js';
 import dataService from '../services/data/dataService.js';
+import { isSuperAdmin } from '../utils/authUtils.js';
 import { Save, X, Plus } from 'lucide-react';
 
 export default function ProductEditPage() {
@@ -41,8 +42,8 @@ export default function ProductEditPage() {
           return;
         }
 
-        const userRole = user.app_metadata?.role || user.user_metadata?.role;
-        if (userRole !== 'super-admin') {
+        // Use centralized role check utility
+        if (!isSuperAdmin(user)) {
           navigate('/');
           return;
         }

@@ -156,7 +156,7 @@ export default function Layout() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-            <img src="/WULogo.png" alt="site-logo" className="h-8 sm:h-10" />
+            <img src="/WULogo.svg" alt="site-logo" className="h-8 sm:h-10" />
           </Link>
 
           {/* Desktop Navigation */}
