@@ -50,6 +50,10 @@ const cartService = {
           .select();
 
         if (error) throw error;
+
+        // Dispatch cart updated event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+
         return { success: true, data: data[0] };
       } else {
         // Add new item
@@ -69,6 +73,10 @@ const cartService = {
           .select();
 
         if (error) throw error;
+
+        // Dispatch cart updated event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+
         return { success: true, data: data[0] };
       }
     } catch (error) {
@@ -93,6 +101,10 @@ const cartService = {
         .select();
 
       if (error) throw error;
+
+      // Dispatch cart updated event
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+
       return { success: true, data: data[0] };
     } catch (error) {
       console.error('Error updating cart quantity:', error);
@@ -111,6 +123,10 @@ const cartService = {
         .eq('id', cartItemId);
 
       if (error) throw error;
+
+      // Dispatch cart updated event
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+
       return { success: true };
     } catch (error) {
       console.error('Error removing from cart:', error);
@@ -129,6 +145,10 @@ const cartService = {
         .eq('user_id', userId);
 
       if (error) throw error;
+
+      // Dispatch cart updated event
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+
       return { success: true };
     } catch (error) {
       console.error('Error clearing cart:', error);

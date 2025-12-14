@@ -68,11 +68,21 @@ export default function Layout() {
       }
     );
 
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      if (user) {
+        fetchCartCount(user.id);
+      }
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
     // Cleanup subscription
     return () => {
       authListener?.subscription.unsubscribe();
+      window.removeEventListener('cartUpdated', handleCartUpdate);
     };
-  }, []);
+  }, [user]);
 
   const fetchCartCount = async (userId) => {
     const result = await cartService.getCartItems(userId);
