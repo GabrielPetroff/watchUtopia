@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
-import authService from '../../services/auth/authServive.js';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 import dataService from '../../services/data/dataService.js';
 import cartService from '../../services/cart/cartService.js';
 import {
@@ -14,8 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function Layout() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading, logout } = useAuth();
   const [activeSection, setActiveSection] = useState(null);
   const [brands, setBrands] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -26,17 +25,12 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    async function checkUser() {
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-      setLoading(false);
-
-      // Fetch cart items count if user is logged in
-      if (currentUser) {
-        fetchCartCount(currentUser.id);
-      }
+    // Fetch cart items count if user is logged in
+    if (user && !loading) {
+      fetchCartCount(user.id);
+    } else if (!user) {
+      setCartItemCount(0);
     }
-    checkUser();
 
     // Fetch brands for footer
     async function fetchBrands() {
@@ -57,21 +51,6 @@ export default function Layout() {
     }
     fetchBrands();
 
-    // Listen for auth state changes
-    const { data: authListener } = authService.onAuthStateChange(
-      (event, session) => {
-        const newUser = session?.user ?? null;
-        setUser(newUser);
-
-        // Update cart count when auth state changes
-        if (newUser) {
-          fetchCartCount(newUser.id);
-        } else {
-          setCartItemCount(0);
-        }
-      }
-    );
-
     // Listen for cart updates
     const handleCartUpdate = () => {
       if (user) {
@@ -83,10 +62,9 @@ export default function Layout() {
 
     // Cleanup subscription
     return () => {
-      authListener?.subscription.unsubscribe();
       window.removeEventListener('cartUpdated', handleCartUpdate);
     };
-  }, [user]);
+  }, [user, loading]);
 
   const fetchCartCount = async (userId) => {
     const result = await cartService.getCartItems(userId);
@@ -100,8 +78,7 @@ export default function Layout() {
   };
 
   const handleLogout = async () => {
-    await authService.logout();
-    setUser(null);
+    await logout();
   };
 
   const scrollToTop = () => {

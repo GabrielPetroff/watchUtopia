@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import authService from '../services/auth/authServive.js';
-import { supabase } from '../services/api/supabaseClient.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -62,9 +62,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const result = await authService.login(formData.email, formData.password);
-      const { data: session } = await supabase.auth.getSession();
-
+      await login(formData.email, formData.password);
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error);

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router';
-import authService from '../services/auth/authServive.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { checkUserRole } from '../utils/authUtils.js';
 
 export default function ProtectedRoute({
@@ -8,17 +7,7 @@ export default function ProtectedRoute({
   requireAuth = true,
   requireAdmin = false,
 }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function checkAuth() {
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-      setLoading(false);
-    }
-    checkAuth();
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (

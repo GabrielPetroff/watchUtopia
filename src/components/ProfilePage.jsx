@@ -1,34 +1,11 @@
-import { useState, useEffect } from 'react';
-import authService from '../services/auth/authServive.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { isSuperAdmin } from '../utils/authUtils.js';
 import SuperAdminProfilePage from './SuperAdminProfilePage.jsx';
 import UserProfilePage from './UserProfilePage.jsx';
 import GuestProfilePage from './GuestProfilePage.jsx';
 
 export default function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function checkUser() {
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-      setLoading(false);
-    }
-    checkUser();
-
-    // Listen for auth state changes
-    const { data: authListener } = authService.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
-
-    // Cleanup subscription
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
