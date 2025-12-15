@@ -118,8 +118,8 @@ export default function CheckoutPage() {
         // Clear cart after successful order
         await cartService.clearCart(user.id);
 
-        // Navigate to orders page
-        navigate('/orders', {
+        // Navigate to profile page
+        navigate('/profile', {
           state: { orderSuccess: true, orderId: orderResult.data.id },
         });
       } else {
