@@ -35,25 +35,17 @@ const dataService = {
 
   /**
    * Fetch a single product by ID
-   * Tries featured watches table first, then brands table
+   * By default, fetches from brands table only
    * @param {string} id - Product ID
-   * @param {boolean} brandsOnly - If true, only fetch from brands table (for editing)
+   * @param {boolean} brandsOnly - If true, only fetch from brands table (default behavior)
+   * @param {boolean} checkFeatured - If true, check featured watches table first, then brands table
    */
-  async getProductById(id, brandsOnly = false) {
+  async getProductById(id, brandsOnly = false, checkFeatured = false) {
     try {
       let data, error;
 
-      if (brandsOnly) {
-        // For editing, only fetch from brands table
-        const result = await supabase
-          .from('brands')
-          .select('*')
-          .eq('id', id)
-          .single();
-        data = result.data;
-        error = result.error;
-      } else {
-        // Try featured watches first
+      if (checkFeatured) {
+        // Check featured watches first, then fall back to brands
         const featuredResult = await supabase
           .from('feauteredwatches')
           .select('*')
@@ -73,6 +65,15 @@ const dataService = {
           data = featuredResult.data;
           error = featuredResult.error;
         }
+      } else {
+        // Default: only fetch from brands table
+        const result = await supabase
+          .from('brands')
+          .select('*')
+          .eq('id', id)
+          .single();
+        data = result.data;
+        error = result.error;
       }
 
       if (error) throw error;
