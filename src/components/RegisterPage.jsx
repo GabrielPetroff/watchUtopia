@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import authService from '../services/auth/authServive.js';
+import authService from '../services/auth/authService.js';
 import { Link } from 'react-router';
 
 export default function RegisterPage() {

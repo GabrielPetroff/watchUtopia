@@ -1,5 +1,5 @@
 import { supabase } from '../api/supabaseClient.js';
-import { getImageUrl } from '../imageService.js';
+import { getImageUrl } from '../image/imageService.js';
 
 const cartService = {
   /**

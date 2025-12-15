@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
-import authService from '../services/auth/authServive.js';
+import authService from '../services/auth/authService.js';
 import wishlistService from '../services/wishlist/wishlistService.js';
 import { Heart, Trash2 } from 'lucide-react';
 

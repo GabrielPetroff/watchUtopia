@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
-import authService from '../services/auth/authServive.js';
+import authService from '../services/auth/authService.js';
 import orderService from '../services/order/orderService.js';
 import { Package, Clock, Truck, CheckCircle, XCircle, Eye } from 'lucide-react';
 

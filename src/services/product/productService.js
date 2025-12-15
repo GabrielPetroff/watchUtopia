@@ -1,5 +1,5 @@
-import { supabase } from './api/supabaseClient';
-import { getImageUrl } from './imageService';
+import { supabase } from '../api/supabaseClient';
+import { getImageUrl } from '../image/imageService';
 
 /**
  * Fetch all watches from the brands table

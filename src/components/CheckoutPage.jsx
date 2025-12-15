@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
-import authService from '../services/auth/authServive.js';
+import authService from '../services/auth/authService.js';
 import cartService from '../services/cart/cartService.js';
 import orderService from '../services/order/orderService.js';
 import {
