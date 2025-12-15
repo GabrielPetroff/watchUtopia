@@ -69,7 +69,8 @@ const orderService = {
    */
   async createOrder(orderData) {
     try {
-      const { userId, items, shippingInfo, paymentMethod, shippingType } = orderData;
+      const { userId, items, shippingInfo, paymentMethod, shippingType } =
+        orderData;
 
       // Calculate total amount
       const totalAmount = items.reduce(
@@ -220,6 +221,77 @@ const orderService = {
       };
     } catch (error) {
       console.error('Update order tracking error:', error);
+      return handleSupabaseError(error);
+    }
+  },
+
+  /**
+   * Update order shipping information
+   * @param {string} orderId - The order's UUID
+   * @param {Object} shippingInfo - Updated shipping information
+   * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
+   */
+  async updateOrderShipping(orderId, shippingInfo) {
+    try {
+      // Check if order can be updated (only pending orders)
+      const { data: order, error: fetchError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          message: 'Order not found: ' + fetchError.message,
+        };
+      }
+
+      if (!order) {
+        return { success: false, message: 'Order not found' };
+      }
+
+      if (order.status !== 'pending') {
+        return {
+          success: false,
+          message: 'Shipping address can only be updated for pending orders',
+        };
+      }
+
+      const updateData = {
+        shipping_address: shippingInfo.address,
+        shipping_city: shippingInfo.city,
+        shipping_postal_code: shippingInfo.postalCode,
+        shipping_country: shippingInfo.country,
+        shipping_phone: shippingInfo.phone,
+      };
+
+      const { error } = await supabase
+        .from('orders')
+        .update(updateData)
+        .eq('id', orderId);
+
+      if (error) {
+        const handledError = handleSupabaseError(error);
+        if (handledError) {
+          throw handledError;
+        }
+      }
+
+      // Fetch the updated order
+      const { data: updatedOrder } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .single();
+
+      return {
+        success: true,
+        data: updatedOrder || { ...order, ...updateData },
+        message: 'Shipping address updated successfully',
+      };
+    } catch (error) {
+      console.error('Update order shipping error:', error);
       return handleSupabaseError(error);
     }
   },

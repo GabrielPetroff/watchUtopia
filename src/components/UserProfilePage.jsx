@@ -16,6 +16,9 @@ export default function UserProfilePage({ user }) {
   const [error, setError] = useState('');
   const [stats, setStats] = useState(null);
   const [deletingOrderId, setDeletingOrderId] = useState(null);
+  const [editingOrderId, setEditingOrderId] = useState(null);
+  const [editingShippingInfo, setEditingShippingInfo] = useState(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -79,6 +82,69 @@ export default function UserProfilePage({ user }) {
     } finally {
       setDeletingOrderId(null);
     }
+  };
+
+  const handleEditAddress = (order) => {
+    setEditingOrderId(order.id);
+    // Shipping info is stored in separate columns
+    setEditingShippingInfo({
+      address: order.shipping_address || '',
+      city: order.shipping_city || '',
+      postalCode: order.shipping_postal_code || '',
+      country: order.shipping_country || '',
+      phone: order.shipping_phone || '',
+    });
+    setError('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingOrderId(null);
+    setEditingShippingInfo(null);
+  };
+
+  const handleUpdateAddress = async (orderId) => {
+    if (
+      !editingShippingInfo.address ||
+      !editingShippingInfo.city ||
+      !editingShippingInfo.postalCode ||
+      !editingShippingInfo.country ||
+      !editingShippingInfo.phone
+    ) {
+      setError('All address fields are required');
+      return;
+    }
+
+    setUpdatingOrderId(orderId);
+    setError('');
+
+    try {
+      const result = await orderService.updateOrderShipping(
+        orderId,
+        editingShippingInfo
+      );
+      if (result.success) {
+        setEditingOrderId(null);
+        setEditingShippingInfo(null);
+        // Refresh orders from server
+        const ordersResult = await dataService.getUserOrders(user.id);
+        if (ordersResult.success) {
+          setOrders(ordersResult.data);
+        }
+      } else {
+        setError(result.message || 'Failed to update delivery address');
+      }
+    } catch (err) {
+      setError('Failed to update delivery address: ' + err.message);
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  const handleShippingInfoChange = (field, value) => {
+    setEditingShippingInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const getStatusIcon = (status) => {
@@ -281,26 +347,152 @@ export default function UserProfilePage({ user }) {
                         item(s)
                       </p>
                       {order.status === 'pending' && (
-                        <button
-                          onClick={() => handleDeleteOrder(order.id)}
-                          disabled={deletingOrderId === order.id}
-                          className="mt-3 px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ml-auto"
-                        >
-                          {deletingOrderId === order.id ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 animate-spin" />
-                              Deleting...
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="w-4 h-4" />
-                              Delete Order
-                            </>
-                          )}
-                        </button>
+                        <div className="mt-3 flex gap-2 ml-auto">
+                          <button
+                            onClick={() => handleEditAddress(order)}
+                            disabled={editingOrderId === order.id}
+                            className="px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                          >
+                            <Package className="w-4 h-4" />
+                            Edit Address
+                          </button>
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            disabled={deletingOrderId === order.id}
+                            className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                          >
+                            {deletingOrderId === order.id ? (
+                              <>
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                Deleting...
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="w-4 h-4" />
+                                Delete Order
+                              </>
+                            )}
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
+
+                  {/* Edit Address Form */}
+                  {editingOrderId === order.id && editingShippingInfo && (
+                    <div className="border-t border-gray-200 pt-4 mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        Edit Delivery Address
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Street Address *
+                          </label>
+                          <input
+                            type="text"
+                            value={editingShippingInfo.address}
+                            onChange={(e) =>
+                              handleShippingInfoChange(
+                                'address',
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="123 Main St"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            City *
+                          </label>
+                          <input
+                            type="text"
+                            value={editingShippingInfo.city}
+                            onChange={(e) =>
+                              handleShippingInfoChange('city', e.target.value)
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="New York"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Postal Code *
+                          </label>
+                          <input
+                            type="text"
+                            value={editingShippingInfo.postalCode}
+                            onChange={(e) =>
+                              handleShippingInfoChange(
+                                'postalCode',
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="10001"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Country *
+                          </label>
+                          <input
+                            type="text"
+                            value={editingShippingInfo.country}
+                            onChange={(e) =>
+                              handleShippingInfoChange(
+                                'country',
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="United States"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Phone Number *
+                          </label>
+                          <input
+                            type="tel"
+                            value={editingShippingInfo.phone}
+                            onChange={(e) =>
+                              handleShippingInfoChange('phone', e.target.value)
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="+1 (555) 123-4567"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-3 mt-4">
+                        <button
+                          onClick={() => handleUpdateAddress(order.id)}
+                          disabled={updatingOrderId === order.id}
+                          className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                          {updatingOrderId === order.id ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              Updating...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4" />
+                              Save Address
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          disabled={updatingOrderId === order.id}
+                          className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Order Timeline */}
                   <div className="border-t border-gray-200 pt-4 mb-4">
@@ -428,6 +620,21 @@ export default function UserProfilePage({ user }) {
                         </div>
                       )}
                     </div>
+                    {order.shipping_address && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Delivery Address:
+                        </p>
+                        <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                          <p>{order.shipping_address}</p>
+                          <p>
+                            {order.shipping_city}, {order.shipping_postal_code}
+                          </p>
+                          <p>{order.shipping_country}</p>
+                          <p className="mt-1">Phone: {order.shipping_phone}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
