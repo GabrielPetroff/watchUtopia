@@ -1,10 +1,7 @@
 import { supabase } from '../api/supabaseClient.js';
 import { getImageUrl } from '../image/imageService.js';
 
-/**
- * Centralized data service for all database operations
- * This service handles all data fetching, creating, updating, and deleting operations
- */
+// Centralized data service for all database operations
 
 const dataService = {
   // ==================== WATCH/PRODUCT OPERATIONS ====================
@@ -429,42 +426,6 @@ const dataService = {
       return { success: true, data: data || [] };
     } catch (error) {
       console.error('Error listing storage files:', error);
-      return { success: false, error: error.message };
-    }
-  },
-
-  // ==================== CAROUSEL OPERATIONS ====================
-
-  /**
-   * Fetch carousel images
-   */
-  async getCarouselImages() {
-    try {
-      const { data, error } = await supabase.storage
-        .from('Carousel-watches')
-        .list('', {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'name', order: 'asc' },
-        });
-
-      if (error) throw error;
-
-      const imageFiles = (data || []).filter(
-        (file) =>
-          file.name &&
-          !file.name.startsWith('.') &&
-          file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)
-      );
-
-      const urls = imageFiles.map((file) => {
-        return supabase.storage.from('Carousel-watches').getPublicUrl(file.name)
-          .data.publicUrl;
-      });
-
-      return { success: true, data: urls };
-    } catch (error) {
-      console.error('Error fetching carousel images:', error);
       return { success: false, error: error.message };
     }
   },
