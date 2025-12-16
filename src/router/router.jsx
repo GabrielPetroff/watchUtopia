@@ -8,7 +8,6 @@ import ContactUsPage from '../components/pages/ContactUsPage.jsx';
 import HomePage from '../components/pages/HomePage.jsx';
 import LoginPage from '../components/pages/LoginPage.jsx';
 import NotFound from '../components/pages/NotFoundPage.jsx';
-import OrdersPage from '../components/pages/OrdersPage.jsx';
 import ProductEditPage from '../components/pages/ProductEditPage.jsx';
 import ProductsPage from '../components/pages/ProductsPage.jsx';
 import RegisterPage from '../components/pages/RegisterPage.jsx';
@@ -78,14 +77,6 @@ const routes = createBrowserRouter([
         element: (
           <ProtectedRoute requireAuth={true}>
             <CheckoutPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/orders',
-        element: (
-          <ProtectedRoute requireAuth={true}>
-            <OrdersPage />
           </ProtectedRoute>
         ),
       },

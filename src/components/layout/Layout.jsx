@@ -492,13 +492,6 @@ export default function Layout() {
                           >
                             Shopping Cart
                           </Link>
-                          <Link
-                            to="/orders"
-                            onClick={scrollToTop}
-                            className="hover:text-gray-300 transition-colors text-sm"
-                          >
-                            My Orders
-                          </Link>
                         </>
                       )}
                     </div>
@@ -643,15 +636,6 @@ export default function Layout() {
                           className="text-sm text-gray-300 hover:text-white transition-colors"
                         >
                           Shopping Cart
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/orders"
-                          onClick={scrollToTop}
-                          className="text-sm text-gray-300 hover:text-white transition-colors"
-                        >
-                          My Orders
                         </Link>
                       </li>
                     </>
