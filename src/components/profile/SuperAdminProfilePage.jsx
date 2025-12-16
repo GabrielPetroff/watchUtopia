@@ -14,6 +14,7 @@ import {
 
 import contactService from '../../services/contact/contactService.js';
 import dataService from '../../services/data/dataService.js';
+import { formatCurrency } from '../../utils/formatters.js';
 
 export default function SuperAdminProfilePage({ user }) {
   const location = useLocation();

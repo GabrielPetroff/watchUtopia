@@ -10,6 +10,7 @@ import {
 
 import dataService from '../../services/data/dataService.js';
 import orderService from '../../services/order/orderService';
+import { formatCurrency } from '../../utils/formatters.js';
 
 export default function UserProfilePage({ user }) {
   const [orders, setOrders] = useState([]);
