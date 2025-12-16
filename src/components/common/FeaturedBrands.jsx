@@ -14,6 +14,23 @@ function FeauturedBrands() {
     loadBrands();
   }, []);
 
+  useEffect(() => {
+    // Update button visibility after brands load
+    if (!loading) {
+      updateButtonVisibility();
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    // Update button visibility on window resize
+    const handleResize = () => {
+      updateButtonVisibility();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const loadBrands = async () => {
     setLoading(true);
     const result = await dataService.getBrandLogos();
@@ -82,7 +99,7 @@ function FeauturedBrands() {
         <div
           ref={sliderRef}
           onScroll={updateButtonVisibility}
-          className="w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth col-span-full scrollbar-hide px-12 md:px-0"
+          className="w-full h-full overflow-x-auto whitespace-nowrap scroll-smooth col-span-full scrollbar-hide"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -95,9 +112,10 @@ function FeauturedBrands() {
               <Link
                 key={index}
                 to={`/products?brand=${encodeURIComponent(item.brand)}`}
+                className="inline-block"
               >
                 <img
-                  className="w-[140px] h-fit inline-block p-2 cursor-pointer hover:scale-105 ease-in-out duration-300"
+                  className="w-[120px] sm:w-[140px] h-auto inline-block p-2 cursor-pointer hover:scale-105 ease-in-out duration-300"
                   src={item.image}
                   alt={item.brand}
                 />

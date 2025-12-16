@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+import dataService from '../../services/data/dataService.js';
+import cartService from '../../services/cart/cartService.js';
 import {
   ChevronDown,
   ChevronRight,
@@ -9,11 +12,6 @@ import {
   Menu,
   X,
 } from 'lucide-react';
-
-import { useAuth } from '../../contexts/AuthContext.jsx';
-
-import cartService from '../../services/cart/cartService.js';
-import dataService from '../../services/data/dataService.js';
 
 export default function Layout() {
   const { user, loading, logout } = useAuth();
