@@ -1,20 +1,22 @@
 import { createBrowserRouter } from 'react-router';
-import HomePage from '../components/HomePage.jsx';
-import ProfilePage from '../components/ProfilePage.jsx';
+
 import Layout from '../components/layout/Layout.jsx';
-import RegisterPage from '../components/RegisterPage.jsx';
-import LoginPage from '../components/LoginPage.jsx';
-import NotFound from '../components/NotFoundPage.jsx';
-import WatchDetailsPage from '../components/WatchDetailsPage.jsx';
-import WishlistPage from '../components/WishlistPage.jsx';
-import OrdersPage from '../components/OrdersPage.jsx';
-import ProductsPage from '../components/ProductsPage.jsx';
-import AboutUsPage from '../components/AboutUsPage.jsx';
-import CartPage from '../components/CartPage.jsx';
-import CheckoutPage from '../components/CheckoutPage.jsx';
-import ProductEditPage from '../components/ProductEditPage.jsx';
-import ContactUsPage from '../components/ContactUsPage.jsx';
-import ShippingDeliveryPage from '../components/ShippingDeliveryPage.jsx';
+import AboutUsPage from '../components/pages/AboutUsPage.jsx';
+import CartPage from '../components/pages/CartPage.jsx';
+import CheckoutPage from '../components/pages/CheckoutPage.jsx';
+import ContactUsPage from '../components/pages/ContactUsPage.jsx';
+import HomePage from '../components/pages/HomePage.jsx';
+import LoginPage from '../components/pages/LoginPage.jsx';
+import NotFound from '../components/pages/NotFoundPage.jsx';
+import OrdersPage from '../components/pages/OrdersPage.jsx';
+import ProductEditPage from '../components/pages/ProductEditPage.jsx';
+import ProductsPage from '../components/pages/ProductsPage.jsx';
+import RegisterPage from '../components/pages/RegisterPage.jsx';
+import ShippingDeliveryPage from '../components/pages/ShippingDeliveryPage.jsx';
+import WatchDetailsPage from '../components/pages/WatchDetailsPage.jsx';
+import WishlistPage from '../components/pages/WishlistPage.jsx';
+import ProfilePage from '../components/profile/ProfilePage.jsx';
+
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 const routes = createBrowserRouter([

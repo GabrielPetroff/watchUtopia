@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import authService from '../services/auth/authService.js';
-import dataService from '../services/data/dataService.js';
-import { isSuperAdmin } from '../utils/authUtils.js';
 import { Save, X, Plus } from 'lucide-react';
+
+import authService from '../../services/auth/authService.js';
+import dataService from '../../services/data/dataService.js';
+
+import { isSuperAdmin } from '../../utils/authUtils.js';
 
 export default function ProductEditPage() {
   const { id } = useParams();

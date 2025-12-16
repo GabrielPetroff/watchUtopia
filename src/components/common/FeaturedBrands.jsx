@@ -1,6 +1,7 @@
-import { Link } from 'react-router';
 import { useState, useRef, useEffect } from 'react';
-import dataService from '../services/data/dataService.js';
+import { Link } from 'react-router';
+
+import dataService from '../../services/data/dataService.js';
 
 function FeauturedBrands() {
   const sliderRef = useRef(null);

@@ -1,8 +1,10 @@
-import { useAuth } from '../contexts/AuthContext.jsx';
-import { isSuperAdmin } from '../utils/authUtils.js';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+
+import { isSuperAdmin } from '../../utils/authUtils.js';
+
+import GuestProfilePage from './GuestProfilePage.jsx';
 import SuperAdminProfilePage from './SuperAdminProfilePage.jsx';
 import UserProfilePage from './UserProfilePage.jsx';
-import GuestProfilePage from './GuestProfilePage.jsx';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();

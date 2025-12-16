@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
+import contactService from '../../services/contact/contactService.js';
+
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -20,23 +22,36 @@ export default function ContactUsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission
     setSubmitStatus('sending');
 
-    // In a real application, you would send this to your backend
-    setTimeout(() => {
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-      });
+    try {
+      const result = await contactService.submitContactMessage(formData);
 
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 3000);
+      } else {
+        setSubmitStatus('error');
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setSubmitStatus('error');
       setTimeout(() => {
         setSubmitStatus(null);
       }, 3000);
-    }, 1500);
+    }
   };
 
   return (
@@ -230,6 +245,12 @@ export default function ContactUsPage() {
               {submitStatus === 'success' && (
                 <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
                   Thank you for your message! We'll get back to you soon.
+                </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                  Failed to send message. Please try again.
                 </div>
               )}
 

@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
-import authService from '../services/auth/authService.js';
-import cartService from '../services/cart/cartService.js';
-import orderService from '../services/order/orderService.js';
 import {
   MapPin,
   ShoppingBag,
@@ -11,6 +8,10 @@ import {
   CreditCard,
   Package,
 } from 'lucide-react';
+
+import authService from '../../services/auth/authService.js';
+import cartService from '../../services/cart/cartService.js';
+import orderService from '../../services/order/orderService.js';
 
 export default function CheckoutPage() {
   const [user, setUser] = useState(null);

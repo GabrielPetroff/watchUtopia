@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import authService from '../services/auth/authService.js';
 import { Link } from 'react-router';
+
+import authService from '../../services/auth/authService.js';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({

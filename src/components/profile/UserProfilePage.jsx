@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import orderService from '../services/order/orderService';
-import dataService from '../services/data/dataService.js';
 import {
   Package,
   Clock,
@@ -9,6 +7,9 @@ import {
   XCircle,
   RefreshCw,
 } from 'lucide-react';
+
+import dataService from '../../services/data/dataService.js';
+import orderService from '../../services/order/orderService';
 
 export default function UserProfilePage({ user }) {
   const [orders, setOrders] = useState([]);

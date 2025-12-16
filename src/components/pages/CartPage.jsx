@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
-import authService from '../services/auth/authService.js';
-import cartService from '../services/cart/cartService.js';
 import { ShoppingCart, Plus, Minus, Trash2, ArrowRight } from 'lucide-react';
+
+import authService from '../../services/auth/authService.js';
+import cartService from '../../services/cart/cartService.js';
 
 export default function CartPage() {
   const [user, setUser] = useState(null);

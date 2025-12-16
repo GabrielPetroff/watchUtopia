@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import dataService from '../services/data/dataService.js';
+
+import dataService from '../../services/data/dataService.js';
 
 export default function ProductsPage() {
   const [watches, setWatches] = useState([]);

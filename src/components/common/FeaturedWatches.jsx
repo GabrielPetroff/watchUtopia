@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router';
-import authService from '../services/auth/authService.js';
-import cartService from '../services/cart/cartService.js';
-import dataService from '../services/data/dataService.js';
+
+import authService from '../../services/auth/authService.js';
+import cartService from '../../services/cart/cartService.js';
+import dataService from '../../services/data/dataService.js';
 
 function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import authService from '../services/auth/authService.js';
-import wishlistService from '../services/wishlist/wishlistService.js';
-import cartService from '../services/cart/cartService.js';
-import dataService from '../services/data/dataService.js';
 import { Heart } from 'lucide-react';
+
+import authService from '../../services/auth/authService.js';
+import cartService from '../../services/cart/cartService.js';
+import dataService from '../../services/data/dataService.js';
+import wishlistService from '../../services/wishlist/wishlistService.js';
 
 function WatchDetailsPage() {
   const { id } = useParams();
