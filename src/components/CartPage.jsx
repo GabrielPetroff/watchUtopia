@@ -4,6 +4,7 @@ import { ShoppingCart, Plus, Minus, Trash2, ArrowRight } from 'lucide-react';
 
 import authService from '../services/auth/authService.js';
 import cartService from '../services/cart/cartService.js';
+import { formatCurrency } from '../utils/formatters.js';
 
 export default function CartPage() {
   const [user, setUser] = useState(null);
@@ -48,13 +49,6 @@ export default function CartPage() {
     if (!user || cartItems.length === 0) return;
     // Navigate to checkout page
     navigate('/checkout');
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
   };
 
   const calculateSubtotal = () => {

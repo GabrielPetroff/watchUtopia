@@ -12,6 +12,7 @@ import {
 import authService from '../services/auth/authService.js';
 import cartService from '../services/cart/cartService.js';
 import orderService from '../services/order/orderService.js';
+import { formatCurrency } from '../utils/formatters.js';
 
 export default function CheckoutPage() {
   const [user, setUser] = useState(null);
@@ -143,13 +144,6 @@ export default function CheckoutPage() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
   };
 
   const calculateSubtotal = () => {

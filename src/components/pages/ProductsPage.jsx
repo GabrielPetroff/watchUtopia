@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
 import dataService from '../../services/data/dataService.js';
+import { formatCurrency } from '../../utils/formatters.js';
 
 export default function ProductsPage() {
   const [watches, setWatches] = useState([]);
@@ -440,7 +441,7 @@ export default function ProductsPage() {
                       </h2>
                       <div className="flex items-center justify-between">
                         <p className="text-xl font-bold text-gray-900">
-                          ${watch.price?.toLocaleString()}
+                          {formatCurrency(watch.price)}
                         </p>
                         <span className="text-sm text-gray-600 group-hover:underline">
                           View Details →

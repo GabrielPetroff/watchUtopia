@@ -6,6 +6,7 @@ import authService from '../services/auth/authService.js';
 import cartService from '../services/cart/cartService.js';
 import dataService from '../services/data/dataService.js';
 import wishlistService from '../services/wishlist/wishlistService.js';
+import { formatCurrency } from '../utils/formatters.js';
 
 function WatchDetailsPage() {
   const { id } = useParams();
@@ -257,7 +258,7 @@ function WatchDetailsPage() {
                 {watch.brand}
               </h2>
               <div className="text-2xl md:text-3xl 2xl:text-4xl font-semibold">
-                ${watch.price}
+                {formatCurrency(watch.price)}
               </div>
             </div>
 

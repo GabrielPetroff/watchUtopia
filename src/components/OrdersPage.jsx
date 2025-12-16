@@ -4,6 +4,7 @@ import { Package, Clock, Truck, CheckCircle, XCircle, Eye } from 'lucide-react';
 
 import authService from '../services/auth/authService.js';
 import orderService from '../services/order/orderService.js';
+import { formatCurrency, formatDate } from '../utils/formatters.js';
 
 export default function OrdersPage() {
   const [user, setUser] = useState(null);
@@ -68,21 +69,6 @@ export default function OrdersPage() {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
   };
 
   if (loading) {

@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import authService from '../../services/auth/authService.js';
 import cartService from '../../services/cart/cartService.js';
 import dataService from '../../services/data/dataService.js';
+import { formatCurrency } from '../../utils/formatters.js';
 
 function FeaturedWatches() {
   const [activeContentIndex, setActiveContentIndex] = useState(0);
@@ -109,7 +110,9 @@ function FeaturedWatches() {
           <h3 className="font-medium text-sm 2xl:text-base line-clamp-2 flex-grow">
             {item.model}
           </h3>
-          <h3 className="font-semibold text-lg 2xl:text-xl">${item.price}</h3>
+          <h3 className="font-semibold text-lg 2xl:text-xl">
+            {formatCurrency(item.price)}
+          </h3>
         </div>
       </Link>
       <button

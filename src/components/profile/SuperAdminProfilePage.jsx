@@ -918,7 +918,7 @@ export default function SuperAdminProfilePage({ user }) {
                           {product.model}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ${product.price.toFixed(2)}
+                          {formatCurrency(product.price)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {product.tag || '-'}
@@ -1189,8 +1189,8 @@ export default function SuperAdminProfilePage({ user }) {
                                       {item.brand} - {item.model}
                                     </p>
                                     <p className="text-gray-500">
-                                      Qty: {item.quantity} × $
-                                      {parseFloat(item.price).toFixed(2)}
+                                      Qty: {item.quantity} ×{' '}
+                                      {formatCurrency(item.price)}
                                     </p>
                                   </div>
                                 </div>

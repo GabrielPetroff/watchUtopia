@@ -14,6 +14,7 @@ import {
 
 import contactService from '../services/contact/contactService.js';
 import dataService from '../services/data/dataService.js';
+import { formatCurrency } from '../utils/formatters.js';
 
 export default function SuperAdminProfilePage({ user }) {
   const location = useLocation();
@@ -914,7 +915,7 @@ export default function SuperAdminProfilePage({ user }) {
                           {product.model}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ${product.price.toFixed(2)}
+                          {formatCurrency(product.price)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {product.tag || '-'}
@@ -1185,8 +1186,8 @@ export default function SuperAdminProfilePage({ user }) {
                                       {item.brand} - {item.model}
                                     </p>
                                     <p className="text-gray-500">
-                                      Qty: {item.quantity} × $
-                                      {parseFloat(item.price).toFixed(2)}
+                                      Qty: {item.quantity} ×{' '}
+                                      {formatCurrency(item.price)}
                                     </p>
                                   </div>
                                 </div>

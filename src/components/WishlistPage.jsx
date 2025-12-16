@@ -158,7 +158,7 @@ export default function WishlistPage() {
               </p>
               {item.product_price && (
                 <p className="text-xl font-bold text-indigo-600 mb-4">
-                  ${parseFloat(item.product_price).toFixed(2)}
+                  {formatCurrency(item.product_price)}
                 </p>
               )}
               <button

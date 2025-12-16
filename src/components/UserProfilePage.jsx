@@ -341,7 +341,7 @@ export default function UserProfilePage({ user }) {
                     </div>
                     <div className="mt-4 md:mt-0 text-right">
                       <p className="text-2xl font-bold text-gray-900">
-                        ${parseFloat(order.total_amount).toFixed(2)}
+                        {formatCurrency(order.total_amount)}
                       </p>
                       <p className="text-sm text-gray-500">
                         {Array.isArray(order.items) ? order.items.length : 0}{' '}
@@ -583,7 +583,7 @@ export default function UserProfilePage({ user }) {
                               </div>
                               <div className="text-right">
                                 <p className="font-semibold text-gray-900">
-                                  ${parseFloat(item.price).toFixed(2)}
+                                  {formatCurrency(item.price)}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                   per item
