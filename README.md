@@ -82,14 +82,6 @@ I used React Router's createBrowserRouter with nested routes:
 **Backend Integration**  
 Supabase provides authentication, PostgreSQL database, and file storage. I created a centralized supabaseClient module with global error handling that all services use consistently.
 
-**Code Quality**  
-Recently cleaned and optimized the codebase:
-
-- Removed 21 unused functions across services
-- Deleted 2 completely unused service files
-- Added comprehensive comments to all service functions
-- Standardized error handling patterns
-
 ### Data Flow
 
 User interaction → Component calls service → Service calls Supabase → State updates → UI re-renders
