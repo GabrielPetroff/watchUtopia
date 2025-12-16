@@ -2,9 +2,8 @@ import { supabase } from '../api/supabaseClient.js';
 import { getImageUrl } from '../image/imageService.js';
 
 const cartService = {
-  /**
-   * Get all cart items for a user
-   */
+  // Get all cart items for a user from the cart_items table and map image URLs
+
   async getCartItems(userId) {
     try {
       const { data, error } = await supabase
@@ -15,7 +14,6 @@ const cartService = {
 
       if (error) throw error;
 
-      // Map through cart items and get public URLs for images
       const cartItemsWithImageUrls = (data || []).map((item) => ({
         ...item,
         imageUrl: getImageUrl(item.image),
@@ -28,9 +26,8 @@ const cartService = {
     }
   },
 
-  /**
-   * Add item to cart
-   */
+  // Add item to cart - checks if item already exists and updates quantity, or inserts new item. Dispatches cartUpdated event
+
   async addToCart(userId, watchData) {
     try {
       // Check if item already exists in cart
@@ -152,37 +149,6 @@ const cartService = {
       return { success: true };
     } catch (error) {
       console.error('Error clearing cart:', error);
-      return { success: false, error: error.message };
-    }
-  },
-
-  /**
-   * Get cart summary (total items and total price)
-   */
-  async getCartSummary(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('cart_items')
-        .select('quantity, price')
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      const totalItems = data.reduce((sum, item) => sum + item.quantity, 0);
-      const totalPrice = data.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
-
-      return {
-        success: true,
-        data: {
-          totalItems,
-          totalPrice,
-        },
-      };
-    } catch (error) {
-      console.error('Error fetching cart summary:', error);
       return { success: false, error: error.message };
     }
   },

@@ -159,58 +159,6 @@ const wishlistService = {
       return { success: false, isInWishlist: false };
     }
   },
-
-  /**
-   * Get wishlist count for a user
-   * @param {string} userId - The user's UUID
-   * @returns {Promise<{success: boolean, count?: number}>}
-   */
-  async getWishlistCount(userId) {
-    try {
-      const { count, error } = await supabase
-        .from('wishlist_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, count: count || 0 };
-    } catch (error) {
-      console.error('Get wishlist count error:', error);
-      return { success: false, count: 0 };
-    }
-  },
-
-  /**
-   * Clear all wishlist items for a user
-   * @param {string} userId - The user's UUID
-   * @returns {Promise<{success: boolean, message?: string}>}
-   */
-  async clearWishlist(userId) {
-    try {
-      const { error } = await supabase
-        .from('wishlist_items')
-        .delete()
-        .eq('user_id', userId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, message: 'Wishlist cleared successfully' };
-    } catch (error) {
-      console.error('Clear wishlist error:', error);
-      return handleSupabaseError(error);
-    }
-  },
 };
 
 export default wishlistService;

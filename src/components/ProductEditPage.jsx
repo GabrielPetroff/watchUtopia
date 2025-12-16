@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Save, X, Plus } from 'lucide-react';
 
-import authService from '../../services/auth/authService.js';
-import dataService from '../../services/data/dataService.js';
+import authService from '../services/auth/authService.js';
+import dataService from '../services/data/dataService.js';
 
-import { isSuperAdmin } from '../../utils/authUtils.js';
+import { isSuperAdmin } from '../utils/authUtils.js';
 
 export default function ProductEditPage() {
   const { id } = useParams();
@@ -50,8 +50,8 @@ export default function ProductEditPage() {
           return;
         }
 
-        // Fetch product from brands table (for editing)
-        const result = await dataService.getProductById(id);
+        // Fetch product from brands table only (for editing)
+        const result = await dataService.getProductById(id, true);
 
         if (!result.success || !result.data) {
           setError(result.error || 'Product not found');

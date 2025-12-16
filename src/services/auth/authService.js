@@ -2,7 +2,7 @@ import { supabase } from '../api/supabaseClient.js';
 import { handleSupabaseError } from '../api/supabaseClient.js';
 
 const authService = {
-  // Register an user
+  // Register a new user with email, password and optional additional data using Supabase auth
 
   async register(email, password, additionalData = {}) {
     try {
@@ -29,7 +29,7 @@ const authService = {
     }
   },
 
-  // Login user
+  // Login user with email and password credentials, returns user and session data
 
   async login(email, password) {
     try {
@@ -56,7 +56,7 @@ const authService = {
     }
   },
 
-  // Logout User
+  // Logout current user and clear their session from Supabase
 
   async logout() {
     try {
@@ -76,7 +76,7 @@ const authService = {
     }
   },
 
-  // Get logged user
+  // Get currently logged in user from Supabase auth session
 
   async getCurrentUser() {
     try {
@@ -99,13 +99,13 @@ const authService = {
     }
   },
 
-  // Listen for state change in login/logout
+  // Listen for authentication state changes (login/logout) and execute callback function
 
   onAuthStateChange(callback) {
     return supabase.auth.onAuthStateChange(callback);
   },
 
-  // Get current session
+  // Get current authentication session from Supabase
 
   async getSession() {
     try {
@@ -128,75 +128,11 @@ const authService = {
     }
   },
 
-  // Check if user is authenticated
+  // Check if user is currently authenticated by verifying active session exists
 
   async isAuthenticated() {
     const session = await this.getSession();
     return !!session;
-  },
-
-  // Send reset password email
-
-  async resetPassword(email) {
-    try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data };
-    } catch (error) {
-      console.error('Password reset error:', error);
-      return handleSupabaseError(error);
-    }
-  },
-
-  // Update password
-
-  async updatePassword(newPassword) {
-    try {
-      const { data, error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data };
-    } catch (error) {
-      console.error('Update password error: ', error);
-      return handleSupabaseError(error);
-    }
-  },
-
-  // Refresh current session
-
-  async refreshSession() {
-    try {
-      const { data, error } = await supabase.auth.refreshSession();
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, session: data.session };
-    } catch (error) {
-      console.error('Refresh session error: ', error);
-      return handleSupabaseError(error);
-    }
   },
 };
 

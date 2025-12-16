@@ -6,9 +6,8 @@ import { getImageUrl } from '../image/imageService.js';
 const dataService = {
   // ==================== WATCH/PRODUCT OPERATIONS ====================
 
-  /**
-   * Fetch all products from the brands table
-   */
+  // Fetch all products from the brands table ordered by brand name and map image URLs
+
   async getAllProducts() {
     try {
       const { data, error } = await supabase
@@ -30,48 +29,15 @@ const dataService = {
     }
   },
 
-  /**
-   * Fetch a single product by ID
-   * By default, fetches from brands table only
-   * @param {string} id - Product ID
-   * @param {boolean} brandsOnly - If true, only fetch from brands table (default behavior)
-   * @param {boolean} checkFeatured - If true, check featured watches table first, then brands table
-   */
-  async getProductById(id, brandsOnly = false, checkFeatured = false) {
+  // Fetch a single product by ID from brands table and map its image URL
+
+  async getProductById(id) {
     try {
-      let data, error;
-
-      if (checkFeatured) {
-        // Check featured watches first, then fall back to brands
-        const featuredResult = await supabase
-          .from('feauteredwatches')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        // If not found in featured, try brands table
-        if (!featuredResult.data || featuredResult.error) {
-          const result = await supabase
-            .from('brands')
-            .select('*')
-            .eq('id', id)
-            .single();
-          data = result.data;
-          error = result.error;
-        } else {
-          data = featuredResult.data;
-          error = featuredResult.error;
-        }
-      } else {
-        // Default: only fetch from brands table
-        const result = await supabase
-          .from('brands')
-          .select('*')
-          .eq('id', id)
-          .single();
-        data = result.data;
-        error = result.error;
-      }
+      const { data, error } = await supabase
+        .from('brands')
+        .select('*')
+        .eq('id', id)
+        .single();
 
       if (error) throw error;
 
@@ -92,9 +58,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Create a new product
-   */
+  // Create a new product in the brands table with provided product data
+
   async createProduct(productData) {
     try {
       const { data, error } = await supabase
@@ -115,9 +80,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Update a product
-   */
+  // Update an existing product in the brands table by ID with new data
+
   async updateProduct(id, updateData) {
     try {
       const { data, error } = await supabase
@@ -139,14 +103,10 @@ const dataService = {
     }
   },
 
-  /**
-   * Increment times_bought for a product
-   * @param {string} productId - Product ID
-   * @param {number} quantity - Quantity to increment by (default: 1)
-   */
+  // Increment times_bought counter for a product using database function, tracks product popularity
+
   async incrementTimesBought(productId, quantity = 1) {
     try {
-      // Use RPC function to bypass RLS
       const { data, error } = await supabase.rpc('increment_times_bought', {
         product_id: productId,
         quantity_to_add: quantity,
@@ -167,9 +127,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Delete a product
-   */
+  // Delete a product from the brands table by ID
+
   async deleteProduct(id) {
     try {
       const { error } = await supabase.from('brands').delete().eq('id', id);
@@ -185,9 +144,7 @@ const dataService = {
 
   // ==================== FEATURED WATCHES OPERATIONS ====================
 
-  /**
-   * Fetch best selling watches based on times_bought from brands table
-   */
+  // Fetch best selling watches based on times_bought counter from brands table, ordered by popularity
   async getBestSellers(limit = 12) {
     try {
       const { data, error } = await supabase
@@ -212,9 +169,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Fetch latest watch releases from brands table
-   */
+  // Fetch latest watch releases from brands table ordered by ID (newest first)
+
   async getLatestReleases(limit = 12) {
     try {
       const { data, error } = await supabase
@@ -239,9 +195,8 @@ const dataService = {
 
   // ==================== ORDER OPERATIONS ====================
 
-  /**
-   * Fetch all orders (admin only)
-   */
+  // Fetch all orders from database ordered by order date (admin only functionality)
+
   async getAllOrders() {
     try {
       const { data, error } = await supabase
@@ -264,9 +219,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Fetch orders for a specific user
-   */
+  // Fetch all orders for a specific user ordered by order date
+
   async getUserOrders(userId) {
     try {
       const { data, error } = await supabase
@@ -284,9 +238,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Get user order statistics
-   */
+  // Get user order statistics including total orders, orders by status, and total amount spent
+
   async getUserOrderStats(userId) {
     try {
       const { data, error } = await supabase
@@ -315,9 +268,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Update order status (admin only)
-   */
+  // Update order status (admin only) and automatically set shipped_at or delivered_at timestamps
+
   async updateOrderStatus(orderId, status) {
     try {
       const updateData = { status };
@@ -355,9 +307,8 @@ const dataService = {
 
   // ==================== STORAGE/IMAGE OPERATIONS ====================
 
-  /**
-   * Upload image to storage bucket
-   */
+  // Upload image to Supabase storage bucket and return path and public URL
+
   async uploadImage(bucketName, file, filePath) {
     try {
       const { data, error } = await supabase.storage
@@ -380,9 +331,8 @@ const dataService = {
     }
   },
 
-  /**
-   * Delete image from storage bucket
-   */
+  // Delete image from Supabase storage bucket by file path
+
   async deleteImage(bucketName, filePath) {
     try {
       const { error } = await supabase.storage
@@ -398,43 +348,10 @@ const dataService = {
     }
   },
 
-  /**
-   * Get public URL for an image
-   */
-  getImagePublicUrl(bucketName, filePath) {
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-    return publicUrl;
-  },
-
-  /**
-   * List all files in a storage bucket
-   */
-  async listStorageFiles(bucketName, path = '', options = {}) {
-    try {
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .list(path, {
-          limit: options.limit || 100,
-          offset: options.offset || 0,
-          sortBy: options.sortBy || { column: 'name', order: 'asc' },
-        });
-
-      if (error) throw error;
-
-      return { success: true, data: data || [] };
-    } catch (error) {
-      console.error('Error listing storage files:', error);
-      return { success: false, error: error.message };
-    }
-  },
-
   // ==================== BRAND OPERATIONS ====================
 
-  /**
-   * Fetch brand logos from storage bucket
-   */
+  // Fetch brand logos from storage bucket, filters image files and formats brand names from filenames
+
   async getBrandLogos() {
     try {
       const { data, error } = await supabase.storage.from('brands').list('', {

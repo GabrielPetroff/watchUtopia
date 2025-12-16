@@ -31,33 +31,6 @@ const orderService = {
   },
 
   /**
-   * Get a specific order by ID
-   * @param {string} orderId - The order's UUID
-   * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
-   */
-  async getOrderById(orderId) {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('id', orderId)
-        .single();
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data };
-    } catch (error) {
-      console.error('Get order by ID error:', error);
-      return handleSupabaseError(error);
-    }
-  },
-
-  /**
    * Create a new order with items
    * @param {Object} orderData - Order information
    * @param {string} orderData.userId - User's UUID
@@ -193,39 +166,6 @@ const orderService = {
   },
 
   /**
-   * Update order tracking information
-   * @param {string} orderId - The order's UUID
-   * @param {string} trackingNumber - Tracking number
-   * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
-   */
-  async updateOrderTracking(orderId, trackingNumber) {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ tracking_number: trackingNumber })
-        .eq('id', orderId)
-        .select()
-        .single();
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return {
-        success: true,
-        data,
-        message: 'Tracking number updated successfully',
-      };
-    } catch (error) {
-      console.error('Update order tracking error:', error);
-      return handleSupabaseError(error);
-    }
-  },
-
-  /**
    * Update order shipping information
    * @param {string} orderId - The order's UUID
    * @param {Object} shippingInfo - Updated shipping information
@@ -292,55 +232,6 @@ const orderService = {
       };
     } catch (error) {
       console.error('Update order shipping error:', error);
-      return handleSupabaseError(error);
-    }
-  },
-
-  /**
-   * Cancel an order
-   * @param {string} orderId - The order's UUID
-   * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
-   */
-  async cancelOrder(orderId) {
-    try {
-      // Check if order can be cancelled (only pending or processing orders)
-      const { data: order } = await supabase
-        .from('orders')
-        .select('status')
-        .eq('id', orderId)
-        .single();
-
-      if (!order) {
-        return { success: false, message: 'Order not found' };
-      }
-
-      if (!['pending', 'processing'].includes(order.status)) {
-        return {
-          success: false,
-          message: 'Order cannot be cancelled at this stage',
-        };
-      }
-
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ status: 'cancelled' })
-        .eq('id', orderId)
-        .select();
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return {
-        success: true,
-        data: data?.[0] || data,
-        message: 'Order cancelled successfully',
-      };
-    } catch (error) {
-      console.error('Cancel order error:', error);
       return handleSupabaseError(error);
     }
   },
