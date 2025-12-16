@@ -29,12 +29,18 @@ export default function ProductsPage() {
     const brandParam = searchParams.get('brand');
     if (brandParam) {
       setSelectedBrand(brandParam);
+    } else {
+      // Reset to 'all' if no brand parameter is present
+      setSelectedBrand('all');
     }
 
     // Check if there's a sort parameter in the URL
     const sortParam = searchParams.get('sort');
     if (sortParam) {
       setSortBy(sortParam);
+    } else {
+      // Reset to default sort if no sort parameter
+      setSortBy('newest');
     }
   }, [searchParams]);
 
@@ -224,7 +230,12 @@ export default function ProductsPage() {
             >
               {/* All Brands Button */}
               <button
-                onClick={() => setSelectedBrand('all')}
+                onClick={() => {
+                  setSelectedBrand('all');
+                  // Remove brand parameter from URL
+                  searchParams.delete('brand');
+                  setSearchParams(searchParams);
+                }}
                 className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                   selectedBrand === 'all'
                     ? 'bg-[#161818] text-white shadow-lg'
@@ -238,7 +249,12 @@ export default function ProductsPage() {
               {brands.map((brand) => (
                 <button
                   key={brand}
-                  onClick={() => setSelectedBrand(brand)}
+                  onClick={() => {
+                    setSelectedBrand(brand);
+                    // Update brand parameter in URL
+                    searchParams.set('brand', brand);
+                    setSearchParams(searchParams);
+                  }}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedBrand === brand
                       ? 'bg-[#161818] text-white shadow-lg'
