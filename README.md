@@ -1,16 +1,66 @@
-# React + Vite
+# watchUtopia - Architecture Documentation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+I developed watchUtopia as an e-commerce platform for luxury watches. The application is built with React and Supabase, handling user authentication, product browsing, shopping cart, and order management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+- **React 19** with **Vite** - Frontend framework and build tool
+- **React Router v7** - Client-side routing
+- **Supabase** - Backend (PostgreSQL, Auth, Storage)
+- **Tailwind CSS** - Styling
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Architecture
 
-## Expanding the ESLint configuration
+### Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+├── components/       # UI components (pages, layout, common, profile)
+├── contexts/         # Global state (AuthContext)
+├── router/          # Routes and protection
+├── services/        # Business logic and API calls
+└── utils/           # Helper functions
+```
+
+### Key Architectural Decisions
+
+**Component Structure**  
+I organized components into Pages (full views), Layout (wrapper), Common (reusable pieces), and Profile (role-based views). Each page handles its own data fetching and state.
+
+**Service Layer**  
+I separated all business logic into dedicated services (authService, productService, cartService, etc.). The dataService acts as a central hub for CRUD operations, reducing code duplication.
+
+**Authentication & Authorization**  
+I used React Context (AuthContext) for global auth state. The ProtectedRoute component checks authentication and roles before rendering protected pages. This gives role-based access control - super admins can edit products, users can checkout, and guests must log in.
+
+**State Management**  
+I kept state management simple:
+
+- React Context for auth state
+- Local useState for component state
+- Services handle data fetching
+
+No Redux needed - this keeps the architecture straightforward.
+
+**Routing**  
+I used React Router's createBrowserRouter with nested routes:
+
+- Public routes (home, products)
+- Auth routes (login, register)
+- Protected routes (cart, checkout, orders)
+- Admin routes (product management)
+
+**Backend Integration**  
+Supabase handles authentication, PostgreSQL database, and file storage. I created a supabaseClient module with error handling that all services use.
+
+### Data Flow
+
+User interaction → Component calls service → Service calls Supabase → State updates → UI re-renders
+
+This unidirectional flow keeps things predictable and separates UI from business logic.
+
+## Summary
+
+The architecture follows a modular pattern with clear separation of concerns. Components handle presentation, services manage business logic, and Supabase provides backend infrastructure. This approach makes the codebase maintainable and easy to extend - adding features follows a consistent pattern: service function → component → route → protection if needed.
