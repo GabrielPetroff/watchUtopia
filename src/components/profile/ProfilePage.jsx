@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 
 import { isSuperAdmin } from '../../utils/authUtils.js';
@@ -8,6 +9,10 @@ import UserProfilePage from './UserProfilePage.jsx';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return (

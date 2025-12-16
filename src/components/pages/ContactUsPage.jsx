@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
 import contactService from '../../services/contact/contactService.js';
@@ -11,6 +11,10 @@ export default function ContactUsPage() {
     message: '',
   });
   const [submitStatus, setSubmitStatus] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

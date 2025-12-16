@@ -19,6 +19,10 @@ export default function SuperAdminProfilePage({ user }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('products');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [contactMessages, setContactMessages] = useState([]);

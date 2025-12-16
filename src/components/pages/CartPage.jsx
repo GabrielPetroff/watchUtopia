@@ -12,6 +12,7 @@ export default function CartPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     loadCart();
   }, []);
 

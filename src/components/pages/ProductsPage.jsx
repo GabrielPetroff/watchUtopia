@@ -17,6 +17,8 @@ export default function ProductsPage() {
   const [showTagLeftButton, setShowTagLeftButton] = useState(false);
   const [showTagRightButton, setShowTagRightButton] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -67,7 +69,13 @@ export default function ProductsPage() {
   // Reset tag selection when brand changes
   useEffect(() => {
     setSelectedTag('all');
+    setCurrentPage(1);
   }, [selectedBrand]);
+
+  // Reset to page 1 when tag or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTag, sortBy]);
 
   // Filter and sort watches
   const filteredAndSortedWatches = watches
@@ -396,46 +404,117 @@ export default function ProductsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredAndSortedWatches.map((watch) => (
-              <Link
-                key={watch.id}
-                to={`/watch/${watch.id}`}
-                className="group  rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                style={{ backgroundColor: '#F0F8FF' }}
-              >
-                {/* Image */}
-                <div
-                  className="aspect-square overflow-hidden "
-                  style={{ backgroundColor: '#F0F8FF' }}
-                >
-                  <img
-                    src={watch.imageUrl}
-                    alt={`${watch.brand} ${watch.model}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredAndSortedWatches
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((watch) => (
+                  <Link
+                    key={watch.id}
+                    to={`/watch/${watch.id}`}
+                    className="group  rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    style={{ backgroundColor: '#F0F8FF' }}
+                  >
+                    {/* Image */}
+                    <div
+                      className="aspect-square overflow-hidden "
+                      style={{ backgroundColor: '#F0F8FF' }}
+                    >
+                      <img
+                        src={watch.imageUrl}
+                        alt={`${watch.brand} ${watch.model}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
 
-                {/* Details */}
-                <div className="p-4">
-                  <h3 className="text-sm font-semibold text-gray-500 mb-1">
-                    {watch.brand}
-                  </h3>
-                  <h2 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                    {watch.model}
-                  </h2>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xl font-bold text-indigo-600">
-                      ${watch.price?.toLocaleString()}
-                    </p>
-                    <span className="text-sm text-indigo-600 group-hover:underline">
-                      View Details →
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                    {/* Details */}
+                    <div className="p-4">
+                      <h3 className="text-sm font-semibold text-gray-500 mb-1">
+                        {watch.brand}
+                      </h3>
+                      <h2 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                        {watch.model}
+                      </h2>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xl font-bold text-gray-900">
+                          ${watch.price?.toLocaleString()}
+                        </p>
+                        <span className="text-sm text-gray-600 group-hover:underline">
+                          View Details →
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {filteredAndSortedWatches.length > itemsPerPage && (
+              <div className="mt-12 flex justify-center items-center gap-2">
+                {/* Previous Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                {Array.from(
+                  {
+                    length: Math.ceil(
+                      filteredAndSortedWatches.length / itemsPerPage
+                    ),
+                  },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`px-4 py-2 rounded-md transition-colors ${
+                      currentPage === page
+                        ? 'bg-[#161818] text-white'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage((prev) =>
+                      Math.min(
+                        prev + 1,
+                        Math.ceil(
+                          filteredAndSortedWatches.length / itemsPerPage
+                        )
+                      )
+                    );
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={
+                    currentPage ===
+                    Math.ceil(filteredAndSortedWatches.length / itemsPerPage)
+                  }
+                  className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
