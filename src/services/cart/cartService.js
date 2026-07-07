@@ -87,6 +87,10 @@ const cartService = {
    */
   async updateQuantity(cartItemId, quantity) {
     try {
+      if (!Number.isInteger(quantity) || quantity > 99) {
+        return { success: false, error: 'Invalid quantity' };
+      }
+
       if (quantity <= 0) {
         return await this.removeFromCart(cartItemId);
       }

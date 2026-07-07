@@ -8,7 +8,27 @@ const contactService = {
    */
   async submitContactMessage(messageData) {
     try {
-      const { name, email, subject, message } = messageData;
+      const name = messageData.name?.trim();
+      const email = messageData.email?.trim();
+      const subject = messageData.subject?.trim();
+      const message = messageData.message?.trim();
+
+      if (!name || !email || !subject || !message) {
+        return { success: false, message: 'All fields are required' };
+      }
+
+      if (
+        name.length > 100 ||
+        email.length > 254 ||
+        subject.length > 200 ||
+        message.length > 5000
+      ) {
+        return { success: false, message: 'One or more fields are too long' };
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { success: false, message: 'Please enter a valid email address' };
+      }
 
       const { data, error } = await supabase
         .from('contact_messages')

@@ -51,12 +51,10 @@ export function AuthProvider({ children }) {
 
   // Register function
   const register = async (email, password, firstName, lastName) => {
-    const result = await authService.register(
-      email,
-      password,
+    const result = await authService.register(email, password, {
       firstName,
-      lastName
-    );
+      lastName,
+    });
     const currentUser = await authService.getCurrentUser();
     setUser(currentUser);
     return result;

@@ -206,12 +206,6 @@ const dataService = {
 
       if (error) throw error;
 
-      console.log('getAllOrders fetched:', data?.length, 'orders');
-      console.log(
-        'Order IDs:',
-        data?.map((o) => o.id.slice(0, 8))
-      );
-
       return { success: true, data: data || [] };
     } catch (error) {
       console.error('Error fetching all orders:', error);

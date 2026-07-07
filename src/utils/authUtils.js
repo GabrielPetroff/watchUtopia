@@ -7,12 +7,10 @@
 export function checkUserRole(user, role) {
   if (!user) return false;
 
-  // Check all possible metadata locations for the role
-  return (
-    user.raw_app_meta_data?.role === role ||
-    user.app_metadata?.role === role ||
-    user.user_metadata?.role === role
-  );
+  // Only trust app_metadata: it can only be set server-side.
+  // user_metadata must never be used for roles - any authenticated user
+  // can change it themselves via supabase.auth.updateUser().
+  return user.app_metadata?.role === role;
 }
 
 /**
@@ -32,10 +30,5 @@ export function isSuperAdmin(user) {
 export function getUserRole(user) {
   if (!user) return null;
 
-  return (
-    user.raw_app_meta_data?.role ||
-    user.app_metadata?.role ||
-    user.user_metadata?.role ||
-    null
-  );
+  return user.app_metadata?.role || null;
 }

@@ -82,7 +82,11 @@ const routes = createBrowserRouter([
       },
       {
         path: '/profile',
-        element: <ProfilePage />,
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/product/:id/edit',
