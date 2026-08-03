@@ -1,5 +1,8 @@
 [build]
-  command = "npm run build"
+  # Explicit `prisma generate` guards against a stale bundled Prisma
+  # Client when schema.prisma changes but Netlify's dependency cache
+  # skips re-running npm's postinstall hook.
+  command = "npx prisma generate && npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
