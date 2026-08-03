@@ -83,9 +83,7 @@ export default function RegisterPage() {
       );
 
       if (result.success) {
-        setSuccessMessage(
-          'Registration successful! Please check your email for verification.'
-        );
+        setSuccessMessage('Registration successful! You can now log in.');
 
         setFormData({
           fullName: '',
