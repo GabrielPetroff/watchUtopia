@@ -1,5 +1,6 @@
 import { prisma } from './_lib/prisma.js';
 import { getAuthenticatedUser, requireAdmin, jsonResponse, handleAuthError } from './_lib/auth.js';
+import { snakeCaseKeys } from './_lib/serialize.js';
 
 function getIdFromPath(event) {
   const path = event.path || '';
@@ -53,7 +54,7 @@ export async function handler(event) {
       });
       return jsonResponse(201, {
         success: true,
-        data: created,
+        data: snakeCaseKeys(created),
         message: 'Message sent successfully',
       });
     }
@@ -66,7 +67,7 @@ export async function handler(event) {
       const messages = await prisma.contactMessage.findMany({
         orderBy: { createdAt: 'desc' },
       });
-      return jsonResponse(200, { success: true, data: messages });
+      return jsonResponse(200, { success: true, data: messages.map(snakeCaseKeys) });
     }
 
     if (event.httpMethod === 'PATCH') {

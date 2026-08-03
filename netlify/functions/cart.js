@@ -1,5 +1,6 @@
 import { prisma } from './_lib/prisma.js';
 import { getAuthenticatedUser, jsonResponse, handleAuthError, AuthError } from './_lib/auth.js';
+import { snakeCaseKeys } from './_lib/serialize.js';
 
 function getIdFromPath(event) {
   const path = event.path || '';
@@ -11,7 +12,7 @@ function getIdFromPath(event) {
 }
 
 function serializeCartItem(item) {
-  return { ...item, price: item.price.toString() };
+  return snakeCaseKeys({ ...item, price: item.price.toString() });
 }
 
 async function assertOwnsCartItem(cartItemId, userId) {

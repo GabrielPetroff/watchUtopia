@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from './_lib/prisma.js';
 import { getAuthenticatedUser, jsonResponse, handleAuthError, AuthError } from './_lib/auth.js';
+import { snakeCaseKeys } from './_lib/serialize.js';
 
 function getPathSegments(event) {
   const path = event.path || '';
@@ -11,10 +12,10 @@ function getPathSegments(event) {
 }
 
 function serializeWishlistItem(item) {
-  return {
+  return snakeCaseKeys({
     ...item,
     productPrice: item.productPrice?.toString() ?? null,
-  };
+  });
 }
 
 export async function handler(event) {

@@ -5,6 +5,7 @@ import {
   jsonResponse,
   handleAuthError,
 } from './_lib/auth.js';
+import { snakeCaseKeys } from './_lib/serialize.js';
 
 // Reachable at /api/products and /api/products/:id via the netlify.toml
 // "/api/*" -> "/.netlify/functions/:splat" redirect.
@@ -18,11 +19,11 @@ function getIdFromPath(event) {
 }
 
 function serializeBrand(brand) {
-  return {
+  return snakeCaseKeys({
     ...brand,
     price: brand.price?.toString() ?? null,
     timesBought: brand.timesBought?.toString() ?? null,
-  };
+  });
 }
 
 export async function handler(event) {

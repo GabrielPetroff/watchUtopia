@@ -1,5 +1,6 @@
 import { prisma } from './_lib/prisma.js';
 import { getAuthenticatedUser, requireAdmin, jsonResponse, handleAuthError, AuthError } from './_lib/auth.js';
+import { snakeCaseKeys } from './_lib/serialize.js';
 
 function getPathSegments(event) {
   const path = event.path || '';
@@ -10,7 +11,10 @@ function getPathSegments(event) {
 }
 
 function serializeOrder(order) {
-  return { ...order, totalAmount: order.totalAmount.toString() };
+  // `items` is an opaque JSON blob with its own camelCase convention
+  // (productId, imageUrl, ...) set by this file on order creation -- not
+  // derived from column names, so it must NOT go through snakeCaseKeys.
+  return snakeCaseKeys({ ...order, totalAmount: order.totalAmount.toString() });
 }
 
 function computeStats(orders) {
