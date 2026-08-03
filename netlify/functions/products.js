@@ -20,8 +20,8 @@ function getIdFromPath(event) {
 function serializeBrand(brand) {
   return {
     ...brand,
-    id: brand.id.toString(),
-    price: brand.price.toString(),
+    price: brand.price?.toString() ?? null,
+    timesBought: brand.timesBought?.toString() ?? null,
   };
 }
 
@@ -32,7 +32,7 @@ export async function handler(event) {
 
     if (event.httpMethod === 'GET') {
       if (id) {
-        const brand = await prisma.brand.findUnique({ where: { id: BigInt(id) } });
+        const brand = await prisma.brand.findUnique({ where: { id: Number(id) } });
         if (!brand) {
           return jsonResponse(404, { success: false, error: 'Product not found' });
         }
@@ -82,7 +82,7 @@ export async function handler(event) {
         return jsonResponse(400, { success: false, error: 'Missing product id' });
       }
       const body = JSON.parse(event.body || '{}');
-      const brand = await prisma.brand.update({ where: { id: BigInt(id) }, data: body });
+      const brand = await prisma.brand.update({ where: { id: Number(id) }, data: body });
       return jsonResponse(200, {
         success: true,
         data: serializeBrand(brand),
@@ -94,7 +94,7 @@ export async function handler(event) {
       if (!id) {
         return jsonResponse(400, { success: false, error: 'Missing product id' });
       }
-      await prisma.brand.delete({ where: { id: BigInt(id) } });
+      await prisma.brand.delete({ where: { id: Number(id) } });
       return jsonResponse(200, { success: true, message: 'Product deleted successfully' });
     }
 

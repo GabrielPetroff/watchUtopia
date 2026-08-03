@@ -1,12 +1,15 @@
-// Schema reconciled against live Supabase RLS policies + the
-// increment_times_bought function definition (confirms brands.id is
-// bigint, not a 32-bit int). Column nullability/exact numeric
-// precision below is still best-effort pending the full
-// information_schema.columns dump -- still TODO:
-//   - orders.total_amount / brands.price: assumed numeric(10,2); confirm
-//     precision/scale against the live column.
-//   - orders.items: assumed jsonb.
-//   - nullability of every optional field below.
+// Schema reconciled against the live Supabase information_schema.columns
+// dump for brands/cart_items/wishlist_items/orders/contact_messages --
+// types/nullability below mirror production exactly, including a couple of
+// surprises the earlier best-effort version got wrong:
+//   - brands.id / cart_items.watch_id are plain `integer`, not bigint
+//     (increment_times_bought's `bigint` param is just an implicit
+//     upcast target, not proof the column itself is bigint).
+//   - wishlist_items.product_id is `text`, not numeric at all.
+//   - brands.id has no visible column_default but is populated
+//     automatically (confirmed via SuperAdminProfilePage.jsx never
+//     supplying one on create) -- almost certainly a Postgres identity
+//     column, which Prisma's `@default(autoincrement())` reproduces.
 //
 // Confirmed dead: a `public.order_items` table appears in one leftover RLS
 // policy but is unused by the app (orders store items as JSON) and by
@@ -30,26 +33,31 @@ datasource db {
 }
 
 model Brand {
-  id          BigInt  @id @default(autoincrement())
-  brand       String
-  model       String
-  price       Decimal @db.Decimal(10, 2)
+  id          Int      @id @default(autoincrement())
+  brand       String?
+  model       String?
+  price       Decimal?
+  metadata    Json?
   image       String?
-  timesBought Int?    @default(0) @map("times_bought")
+  tag         String?
+  description String?
+  timesBought Decimal? @map("times_bought")
+  year        Int?
+  condition   String?
 
   @@map("brands")
 }
 
 model CartItem {
   id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  watchId   BigInt   @map("watch_id")
+  userId    String?  @map("user_id")
+  watchId   Int?     @map("watch_id")
   model     String
   brand     String
-  price     Decimal  @db.Decimal(10, 2)
+  price     Decimal
   image     String?
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now()) @map("created_at")
+  quantity  Int?     @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([userId])
   @@map("cart_items")
@@ -58,9 +66,9 @@ model CartItem {
 model WishlistItem {
   id              String   @id @default(uuid())
   userId          String   @map("user_id")
-  productId       BigInt   @map("product_id")
-  productName     String   @map("product_name")
-  productPrice    Decimal  @db.Decimal(10, 2) @map("product_price")
+  productId       String   @map("product_id")
+  productName     String?  @map("product_name")
+  productPrice    Decimal? @map("product_price")
   productImageUrl String?  @map("product_image_url")
   addedAt         DateTime @default(now()) @map("added_at")
 
@@ -73,9 +81,13 @@ model WishlistItem {
 model Order {
   id                 String    @id @default(uuid())
   userId             String    @map("user_id")
-  totalAmount        Decimal   @db.Decimal(10, 2) @map("total_amount")
-  status             String    @default("pending")
-  items              Json
+  orderDate          DateTime? @default(now()) @map("order_date")
+  totalAmount        Decimal   @map("total_amount")
+  status             String?   @default("pending")
+  createdAt          DateTime? @default(now()) @map("created_at")
+  items              Json?     @default("[]")
+  deliveredAt        DateTime? @map("delivered_at")
+  shippedAt          DateTime? @map("shipped_at") @db.Timestamptz(6)
   shippingAddress    String?   @map("shipping_address")
   shippingCity       String?   @map("shipping_city")
   shippingPostalCode String?   @map("shipping_postal_code")
@@ -83,9 +95,6 @@ model Order {
   shippingPhone      String?   @map("shipping_phone")
   paymentMethod      String?   @map("payment_method")
   shippingType       String?   @map("shipping_type")
-  orderDate          DateTime  @default(now()) @map("order_date")
-  shippedAt          DateTime? @map("shipped_at")
-  deliveredAt        DateTime? @map("delivered_at")
 
   @@index([userId])
   @@map("orders")
@@ -97,8 +106,8 @@ model ContactMessage {
   email     String
   subject   String
   message   String
-  status    String   @default("unread")
-  createdAt DateTime @default(now()) @map("created_at")
+  status    String?  @default("unread")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@map("contact_messages")
 }
@@ -114,14 +123,14 @@ model ContactMessage {
 // ---------------------------------------------------------------------
 
 model User {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false) @map("email_verified")
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
   image         String?
-  role          String    @default("user")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  role          String   @default("user")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   sessions Session[]
   accounts Account[]

@@ -13,8 +13,7 @@ function getPathSegments(event) {
 function serializeWishlistItem(item) {
   return {
     ...item,
-    productId: item.productId.toString(),
-    productPrice: item.productPrice.toString(),
+    productPrice: item.productPrice?.toString() ?? null,
   };
 }
 
@@ -26,7 +25,7 @@ export async function handler(event) {
 
     if (event.httpMethod === 'GET') {
       if (segment === 'check') {
-        const productId = BigInt(query.productId);
+        const productId = String(query.productId);
         const item = await prisma.wishlistItem.findUnique({
           where: { userId_productId: { userId, productId } },
         });
@@ -51,7 +50,7 @@ export async function handler(event) {
         const created = await prisma.wishlistItem.create({
           data: {
             userId,
-            productId: BigInt(productId),
+            productId: String(productId),
             productName: productData.name || productData.model,
             productPrice: productData.price,
             productImageUrl: productData.image_url,
@@ -85,7 +84,7 @@ export async function handler(event) {
 
       if (query.productId) {
         await prisma.wishlistItem.deleteMany({
-          where: { userId, productId: BigInt(query.productId) },
+          where: { userId, productId: String(query.productId) },
         });
         return jsonResponse(200, { success: true, message: 'Removed from wishlist successfully' });
       }

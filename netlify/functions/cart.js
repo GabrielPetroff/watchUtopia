@@ -11,7 +11,7 @@ function getIdFromPath(event) {
 }
 
 function serializeCartItem(item) {
-  return { ...item, watchId: item.watchId.toString(), price: item.price.toString() };
+  return { ...item, price: item.price.toString() };
 }
 
 async function assertOwnsCartItem(cartItemId, userId) {
@@ -37,7 +37,7 @@ export async function handler(event) {
 
     if (event.httpMethod === 'POST') {
       const watchData = JSON.parse(event.body || '{}');
-      const watchId = BigInt(watchData.id);
+      const watchId = Number(watchData.id);
 
       const existing = await prisma.cartItem.findFirst({
         where: { userId, watchId },
