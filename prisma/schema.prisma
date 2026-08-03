@@ -1,0 +1,176 @@
+// Schema reconciled against live Supabase RLS policies + the
+// increment_times_bought function definition (confirms brands.id is
+// bigint, not a 32-bit int). Column nullability/exact numeric
+// precision below is still best-effort pending the full
+// information_schema.columns dump -- still TODO:
+//   - orders.total_amount / brands.price: assumed numeric(10,2); confirm
+//     precision/scale against the live column.
+//   - orders.items: assumed jsonb.
+//   - nullability of every optional field below.
+//
+// Confirmed dead: a `public.order_items` table appears in one leftover RLS
+// policy but is unused by the app (orders store items as JSON) and by
+// design elsewhere -- intentionally not modeled here.
+//
+// Auth note: originally planned around Neon Auth/Stack Auth, but Stack
+// Auth is no longer offered for new Neon Auth projects (legacy-only as of
+// this migration). Switched to self-hosting the open-source `better-auth`
+// library directly (mounted in netlify/functions/auth.js) against this
+// same Neon database, since Neon's own "Managed Better Auth" wrapper is
+// still in beta with thin docs. See the User/Session/Account/Verification
+// models below.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id          BigInt  @id @default(autoincrement())
+  brand       String
+  model       String
+  price       Decimal @db.Decimal(10, 2)
+  image       String?
+  timesBought Int?    @default(0) @map("times_bought")
+
+  @@map("brands")
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  watchId   BigInt   @map("watch_id")
+  model     String
+  brand     String
+  price     Decimal  @db.Decimal(10, 2)
+  image     String?
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  productId       BigInt   @map("product_id")
+  productName     String   @map("product_name")
+  productPrice    Decimal  @db.Decimal(10, 2) @map("product_price")
+  productImageUrl String?  @map("product_image_url")
+  addedAt         DateTime @default(now()) @map("added_at")
+
+  // Reproduces the unique-constraint violation (Postgres 23505 / Prisma
+  // P2002) that wishlistService.addToWishlist relies on to detect duplicates.
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+}
+
+model Order {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  totalAmount        Decimal   @db.Decimal(10, 2) @map("total_amount")
+  status             String    @default("pending")
+  items              Json
+  shippingAddress    String?   @map("shipping_address")
+  shippingCity       String?   @map("shipping_city")
+  shippingPostalCode String?   @map("shipping_postal_code")
+  shippingCountry    String?   @map("shipping_country")
+  shippingPhone      String?   @map("shipping_phone")
+  paymentMethod      String?   @map("payment_method")
+  shippingType       String?   @map("shipping_type")
+  orderDate          DateTime  @default(now()) @map("order_date")
+  shippedAt          DateTime? @map("shipped_at")
+  deliveredAt        DateTime? @map("delivered_at")
+
+  @@index([userId])
+  @@map("orders")
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("unread")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+// ---------------------------------------------------------------------
+// Better Auth tables (self-hosted, mounted in netlify/functions/auth.js).
+// Field/table shape follows Better Auth's documented default schema
+// exactly (https://better-auth.com/docs/concepts/database) so the Prisma
+// adapter can talk to it without extra modelName/fieldName config. `role`
+// is a Better Auth additionalField with input:false, so it can only ever
+// be set server-side (via auth.api.* or a direct DB write) -- this is the
+// replacement for the old Supabase app_metadata.role trust boundary.
+// ---------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  idToken               String?   @map("id_token")
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}

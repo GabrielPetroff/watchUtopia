@@ -1,32 +1,15 @@
-import { supabase } from '../api/supabaseClient.js';
-import { handleSupabaseError } from '../api/supabaseClient.js';
+import { apiGet, apiPost, apiDelete } from '../api/apiClient.js';
 
 const wishlistService = {
   /**
-   * Get user's wishlist items
+   * Get user's wishlist items. userId is accepted for call-site
+   * compatibility but ignored -- the API scopes to the authenticated
+   * session's user, never a client-supplied id.
    * @param {string} userId - The user's UUID
    * @returns {Promise<{success: boolean, data?: Array, message?: string}>}
    */
-  async getWishlist(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('wishlist_items')
-        .select('*')
-        .eq('user_id', userId)
-        .order('added_at', { ascending: false });
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data: data || [] };
-    } catch (error) {
-      console.error('Get wishlist error:', error);
-      return handleSupabaseError(error);
-    }
+  async getWishlist(_userId) {
+    return apiGet('/api/wishlist');
   },
 
   /**
@@ -39,41 +22,8 @@ const wishlistService = {
    * @param {string} productData.image_url - Product image URL
    * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
    */
-  async addToWishlist(userId, productId, productData) {
-    try {
-      const { data, error } = await supabase
-        .from('wishlist_items')
-        .insert([
-          {
-            user_id: userId,
-            product_id: productId,
-            product_name: productData.name || productData.model,
-            product_price: productData.price,
-            product_image_url: productData.image_url,
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        // Handle duplicate entry gracefully
-        if (error.code === '23505') {
-          return {
-            success: false,
-            message: 'Item is already in your wishlist',
-          };
-        }
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data, message: 'Added to wishlist successfully' };
-    } catch (error) {
-      console.error('Add to wishlist error:', error);
-      return handleSupabaseError(error);
-    }
+  async addToWishlist(_userId, productId, productData) {
+    return apiPost('/api/wishlist', { productId, productData });
   },
 
   /**
@@ -82,24 +32,7 @@ const wishlistService = {
    * @returns {Promise<{success: boolean, message?: string}>}
    */
   async removeFromWishlist(wishlistItemId) {
-    try {
-      const { error } = await supabase
-        .from('wishlist_items')
-        .delete()
-        .eq('id', wishlistItemId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, message: 'Removed from wishlist successfully' };
-    } catch (error) {
-      console.error('Remove from wishlist error:', error);
-      return handleSupabaseError(error);
-    }
+    return apiDelete(`/api/wishlist/${wishlistItemId}`);
   },
 
   /**
@@ -108,26 +41,8 @@ const wishlistService = {
    * @param {string} productId - The product ID
    * @returns {Promise<{success: boolean, message?: string}>}
    */
-  async removeFromWishlistByProductId(userId, productId) {
-    try {
-      const { error } = await supabase
-        .from('wishlist_items')
-        .delete()
-        .eq('user_id', userId)
-        .eq('product_id', productId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, message: 'Removed from wishlist successfully' };
-    } catch (error) {
-      console.error('Remove from wishlist error:', error);
-      return handleSupabaseError(error);
-    }
+  async removeFromWishlistByProductId(_userId, productId) {
+    return apiDelete(`/api/wishlist?productId=${productId}`);
   },
 
   /**
@@ -136,28 +51,12 @@ const wishlistService = {
    * @param {string} productId - The product ID
    * @returns {Promise<{success: boolean, isInWishlist: boolean, data?: Object}>}
    */
-  async isInWishlist(userId, productId) {
-    try {
-      const { data, error } = await supabase
-        .from('wishlist_items')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('product_id', productId)
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 is "no rows returned" which is expected
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, isInWishlist: !!data, data };
-    } catch (error) {
-      console.error('Check wishlist error:', error);
+  async isInWishlist(_userId, productId) {
+    const result = await apiGet(`/api/wishlist/check?productId=${productId}`);
+    if (!result.success) {
       return { success: false, isInWishlist: false };
     }
+    return result;
   },
 };
 

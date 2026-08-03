@@ -1,65 +1,16 @@
-import { supabase, handleSupabaseError } from '../api/supabaseClient.js';
+import { apiGet, apiPost, apiPatch, apiDelete } from '../api/apiClient.js';
 
 const contactService = {
   /**
-   * Submit a contact form message
+   * Submit a contact form message. Validation (required fields, length
+   * limits, email format) is enforced server-side in
+   * netlify/functions/contact.js -- this is a public, unauthenticated
+   * endpoint, so it can't rely on client-side validation alone.
    * @param {Object} messageData - Contact message data
    * @returns {Promise<{success: boolean, data?: Object, message?: string}>}
    */
   async submitContactMessage(messageData) {
-    try {
-      const name = messageData.name?.trim();
-      const email = messageData.email?.trim();
-      const subject = messageData.subject?.trim();
-      const message = messageData.message?.trim();
-
-      if (!name || !email || !subject || !message) {
-        return { success: false, message: 'All fields are required' };
-      }
-
-      if (
-        name.length > 100 ||
-        email.length > 254 ||
-        subject.length > 200 ||
-        message.length > 5000
-      ) {
-        return { success: false, message: 'One or more fields are too long' };
-      }
-
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return { success: false, message: 'Please enter a valid email address' };
-      }
-
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .insert([
-          {
-            name,
-            email,
-            subject,
-            message,
-            status: 'unread',
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return {
-        success: true,
-        data,
-        message: 'Message sent successfully',
-      };
-    } catch (error) {
-      console.error('Submit contact message error:', error);
-      return handleSupabaseError(error);
-    }
+    return apiPost('/api/contact', messageData);
   },
 
   /**
@@ -67,24 +18,7 @@ const contactService = {
    * @returns {Promise<{success: boolean, data?: Array, message?: string}>}
    */
   async getAllContactMessages() {
-    try {
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, data: data || [] };
-    } catch (error) {
-      console.error('Get all contact messages error:', error);
-      return handleSupabaseError(error);
-    }
+    return apiGet('/api/contact');
   },
 
   /**
@@ -94,24 +28,7 @@ const contactService = {
    * @returns {Promise<{success: boolean, message?: string}>}
    */
   async updateMessageStatus(messageId, status) {
-    try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ status })
-        .eq('id', messageId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, message: 'Status updated successfully' };
-    } catch (error) {
-      console.error('Update message status error:', error);
-      return handleSupabaseError(error);
-    }
+    return apiPatch(`/api/contact/${messageId}`, { status });
   },
 
   /**
@@ -120,24 +37,7 @@ const contactService = {
    * @returns {Promise<{success: boolean, message?: string}>}
    */
   async deleteContactMessage(messageId) {
-    try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', messageId);
-
-      if (error) {
-        const handledError = handleSupabaseError(error);
-        if (handledError) {
-          throw handledError;
-        }
-      }
-
-      return { success: true, message: 'Message deleted successfully' };
-    } catch (error) {
-      console.error('Delete contact message error:', error);
-      return handleSupabaseError(error);
-    }
+    return apiDelete(`/api/contact/${messageId}`);
   },
 };
 

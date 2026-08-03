@@ -15,36 +15,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables!');
 }
 
-// Initialize Supabase Client with authentication and database configuration options
+// Supabase is now used for Storage only (DB + Auth moved to Neon/Better
+// Auth) -- no `auth` config block needed since nothing calls `.auth`
+// on this client anymore.
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    // storage: window.localStorage,
-  },
-  db: {
-    schema: 'public',
-  },
   global: {
     headers: {
       'x-application-name': 'watchUtopia',
     },
   },
 });
-
-// Initialize global error handling - converts Supabase errors into standardized response format
-
-export const handleSupabaseError = (error) => {
-  if (error) {
-    console.error('Supabase Error:', error);
-    return {
-      success: false,
-      message: error.message || 'An error occured!',
-      error: error,
-    };
-  }
-
-  return null;
-};

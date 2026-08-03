@@ -1,0 +1,24 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Clean /api/* paths -> the matching function file (e.g. /api/cart/123 ->
+# netlify/functions/cart.js, with "123" available as extra path segments).
+# netlify/functions/auth.js opts out of this via its own `config.path`
+# (v2 function), so Better Auth's /api/auth/* routes are handled directly
+# by Netlify's function router before this catch-all applies.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA fallback so react-router's client-side routes (e.g. /product/:id)
+# don't 404 on a direct load/refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

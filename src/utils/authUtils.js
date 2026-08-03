@@ -7,10 +7,11 @@
 export function checkUserRole(user, role) {
   if (!user) return false;
 
-  // Only trust app_metadata: it can only be set server-side.
-  // user_metadata must never be used for roles - any authenticated user
-  // can change it themselves via supabase.auth.updateUser().
-  return user.app_metadata?.role === role;
+  // `role` is a Better Auth additionalField configured with input:false
+  // (see netlify/functions/_lib/betterAuth.js), so it can only ever be set
+  // server-side -- never by a client sign-up/update request. Do not swap
+  // this for a client-writable field.
+  return user.role === role;
 }
 
 /**
