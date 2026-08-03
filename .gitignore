@@ -16,6 +16,10 @@ dist-ssr
 .env
 .env*.local
 
+# Local data dumps (real user/product data, never commit)
+*_dump.sql
+supabase_data_dump.sql
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
