@@ -1,8 +1,12 @@
 [build]
   # Explicit `prisma generate` guards against a stale bundled Prisma
   # Client when schema.prisma changes but Netlify's dependency cache
-  # skips re-running npm's postinstall hook.
-  command = "npx prisma generate && npm run build"
+  # skips re-running npm's postinstall hook. `prisma migrate deploy`
+  # applies any pending migrations to whichever DATABASE_URL this
+  # deploy context injects (production DB on master, Neon `development`
+  # branch DB on the dev branch-deploy) -- deliberately NOT in
+  # package.json's build script, since that also runs locally.
+  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
